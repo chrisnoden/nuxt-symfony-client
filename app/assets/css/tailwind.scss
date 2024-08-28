@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    h1 {
+        @apply
+            font-bold leading-tight
+            text-2xl lg:text-3xl
+            tracking-tight text-core-light-900 dark:text-core-dark-200
+        ;
+    }
+
+    h2 {
+        @apply
+            font-bold leading-tight
+            text-xl lg:text-2xl
+            tracking-tight text-core-light-800 dark:text-core-dark-200
+        ;
+    }
+
+    h3 {
+        @apply
+            font-bold leading-tight
+            text-lg lg:text-xl
+            tracking-tight text-core-light-700 dark:text-core-dark-200
+        ;
+    }
+
+    p {
+        @apply text-base text-core-light-900 dark:text-core-dark-100;
+
+        &:not(:first-of-type) {
+            @apply pt-2;
+        }
+    }
+
+    main {
+        a {
+            @apply text-highlight-700 dark:text-highlight-300;
+            &:not(.current) {
+                @apply hover:text-highlight-900 hover:underline dark:hover:text-highlight-100;
+            }
+        }
+    }
+}
