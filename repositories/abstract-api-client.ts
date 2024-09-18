@@ -38,7 +38,7 @@ export default abstract class AbstractApiClient {
         page?: number,
         perPage?: number,
         order?: string,
-    ): Promise<{ data: T[], meta: ApiPaginationMeta }> {
+    ): Promise<{ data: T[], meta: ApiMetaType }> {
         const env = useRuntimeConfig();
 
         const params = merge(query, {
@@ -59,7 +59,7 @@ export default abstract class AbstractApiClient {
         )
             .catch((error) => {
                 handleApiError(error);
-            }) as Promise<{ data: T[], meta: ApiPaginationMeta }>
+            }) as Promise<{ data: T[], meta: ApiMetaType }>
     }
 
     protected post<T>(endpoint:string, data?: object): Promise<T> {

@@ -15,11 +15,9 @@ export default defineNuxtConfig({
         '@nuxtjs/color-mode',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
-        '@primevue/nuxt-module',
         '@vueuse/nuxt',
         'nuxt-csurf',
-        // only load eslint in a dev environment
-        (process.env.NODE_ENV === 'development' ? '@nuxt/eslint' : function() {}),
+        'shadcn-nuxt'
     ],
 
     css: [
@@ -52,5 +50,23 @@ export default defineNuxtConfig({
             SITE_NAME: process.env.SITE_NAME,
             TABLE_PER_PAGE_DEFAULT: process.env.TABLE_PER_PAGE_DEFAULT,
         }
+    },
+
+    shadcn: {
+        /**
+         * Prefix for all the imported component
+         */
+        prefix: '',
+        /**
+         * Directory that the component lives in.
+         * @default "./components/ui"
+         */
+        componentDir: './components/ui'
+    },
+
+    $development: {
+        modules: [
+            '@nuxt/eslint',
+        ]
     }
 })

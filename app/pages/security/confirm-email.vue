@@ -57,9 +57,10 @@ if (undefined !== queryPropAsString('token')) {
             ]"
         >
             <div class="px-6 sm:px-16 pt-8">
-                <div class="sm:mx-auto">
-                    <Logo />
+                <div class="mx-auto">
+                    <Logo/>
                 </div>
+
 
                 <div
                     v-if="!error"

@@ -50,7 +50,7 @@ fetchData();
 
             <div
                 v-if="!editable && user?.active === false"
-                class="text-sm text-amber-600 dark:text-amber-400 font-bold space-y-4"
+                class="text-sm font-bold text-amber-600 space-y-4 dark:text-amber-400"
             >
                 <div>
                     User has not activated their account. They should have received an email

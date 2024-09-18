@@ -59,9 +59,10 @@ if (undefined !== queryPropAsString('token')) {
             ]"
         >
             <div class="px-6 sm:px-16 pt-8">
-                <div class="sm:mx-auto">
-                    <Logo />
+                <div class="mx-auto">
+                    <Logo/>
                 </div>
+
 
                 <div class="flex flex-col items-center justify-center space-y-6 pt-6">
                     <div class="text-core-light-600 dark:text-core-dark-400 text-center">

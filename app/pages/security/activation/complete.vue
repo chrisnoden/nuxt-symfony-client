@@ -14,9 +14,10 @@ definePageMeta({
             class="border rounded-lg w-full max-w-2xl mx-auto mb-12 bg-body-bg"
         >
             <div class="px-6 sm:px-16 py-8">
-                <div class="sm:mx-auto">
-                    <Logo />
+                <div class="mx-auto">
+                    <Logo/>
                 </div>
+
 
                 <div
                     class="sm:mx-auto sm:w-full sm:max-w-sm lg:max-w-lg text-center py-6"

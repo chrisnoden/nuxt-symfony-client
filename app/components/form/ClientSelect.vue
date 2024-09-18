@@ -82,7 +82,7 @@ fetchItems();
     >
         <FieldLabel :name="name">{{ label  }}</FieldLabel>
 
-        <div class="relative mt-2 sm:col-span-2 sm:mt-0 w-full">
+        <div class="relative mt-2 w-full sm:col-span-2 sm:mt-0">
             <ComboboxInput
                 class="
                     block w-full rounded-md border-0 py-1.5 dark:bg-body-bg-dark
@@ -104,27 +104,27 @@ fetchItems();
 
             <ComboboxButton
                 v-if="items.length > 0"
-                class="absolute inset-y-0 right-[20px] flex items-center rounded-r-md px-2 focus:outline-none"
+                class="absolute inset-y-0 flex items-center rounded-r-md px-2 right-[20px] focus:outline-none"
             >
                 <ChevronUpDownIcon
-                    class="h-5 w-5 text-core-light-400 dark:text-core-dark-600 hover:text-core-light-600 dark:hover:text-core-dark-400"
+                    class="h-5 w-5 text-core-light-400 hover:text-core-light-600 dark:text-core-dark-600 dark:hover:text-core-dark-400"
                     aria-hidden="true"
                 />
             </ComboboxButton>
 
             <XMarkIcon
                 v-if="client && !disabled"
-                class="absolute h-5 w-5 cursor-pointer text-core-light-600 dark:text-core-dark-400 top-[8px] right-[8px] hover:text-red-700"
+                class="absolute h-5 w-5 cursor-pointer text-core-light-600 top-[8px] right-[8px] hover:text-red-700 dark:text-core-dark-400"
                 @click="onClear"
             />
 
             <transition
                 enter-active-class="transition duration-100 ease-out"
-                enter-from-class="transform scale-95 opacity-0"
-                enter-to-class="transform scale-100 opacity-100"
+                enter-from-class="scale-95 transform opacity-0"
+                enter-to-class="scale-100 transform opacity-100"
                 leave-active-class="transition duration-75 ease-out"
-                leave-from-class="transform scale-100 opacity-100"
-                leave-to-class="transform scale-95 opacity-0"
+                leave-from-class="scale-100 transform opacity-100"
+                leave-to-class="scale-95 transform opacity-0"
             >
                 <ComboboxOptions
                     class="
@@ -171,17 +171,17 @@ fetchItems();
                 v-if="!disabled"
                 v-tooltip.left="{ value: error,
                                   class: 'error' }"
-                class="md:absolute right-2 top-2 inline-flex items-center pt-1 md:pt-0"
+                class="top-2 right-2 inline-flex items-center pt-1 md:absolute md:pt-0"
                 :class="[
                     hasError ? 'visible' : 'invisible',
                 ]"
             >
                 <ExclamationTriangleIcon
-                    class="w-5 h-5 text-red-600"
+                    class="h-5 w-5 text-red-600"
                 />
 
                 <div
-                    class="md:hidden text-red-600 text-sm ml-2"
+                    class="ml-2 text-sm text-red-600 md:hidden"
                 >{{ error }}</div>
             </div>
 

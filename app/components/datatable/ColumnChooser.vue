@@ -1,21 +1,27 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TData, TValue">
 import { ref } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import FieldLabel from '~/components/form/compact/FieldLabel.vue';
 import ToggleSwitch from '~/components/form/elements/ToggleSwitch.vue';
+import type { Column } from '@tanstack/vue-table';
 
 const props = defineProps<{
-    modelValue: DataTableColumnType[],
+    modelValue: Column<TData, TValue>[],
 }>()
-defineEmits<{
-    'update:modelValue': [columns: DataTableColumnType[]]
+const emit = defineEmits<{
+    'update:modelValue': [columns: Column<TData, TValue>[]]
 }>()
 
-const columns = ref<DataTableColumnType[]>(props.modelValue);
+const columns = toRef<Column<TData, TValue>[]>(props.modelValue);
 const panelVisible = ref<boolean>(false);
 const target = ref(null)
 
 onClickOutside(target, () => panelVisible.value = false);
+
+const onClickToggle = (column: Column<TData, TValue>, value: boolean) => {
+    column.toggleVisibility(value)
+    emit('update:modelValue', columns.value);
+}
 </script>
 
 <template>
@@ -44,22 +50,21 @@ onClickOutside(target, () => panelVisible.value = false);
         >
             <div class="px-4 py-2">
                 <template
-                    v-for="column in columns"
+                    v-for="(column, idx) in columns.filter((column) => column.getCanHide())"
                     :key="column.id"
                 >
                     <div
-                        v-if="column?.hideFromChooser !== true"
                         class="flex w-full flex-row items-center justify-between px-4 py-2"
-                        :class="column.id % 2 ? 'bg-core-light-50 dark:bg-core-dark-950 rounded-md' : ''"
+                        :class="idx % 2 ? 'bg-core-light-50 dark:bg-core-dark-950 rounded-md' : ''"
                     >
                         <div class="flex-1">
-                            {{ column.props?.header ?? column.props.field }}
+                            {{ column.id }}
                         </div>
 
                         <ToggleSwitch
-                            v-model="column.visible"
-                            :label="column.props.header"
-                            @update:model-value="$emit('update:modelValue', columns)"
+                            :model-value="column.getIsVisible()"
+                            :label="column.id"
+                            @update:model-value="onClickToggle(column, $event)"
                         />
                     </div>
                 </template>

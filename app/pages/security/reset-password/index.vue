@@ -46,9 +46,10 @@ const isValidForm = computed(() => (email.value.length > 4));
             ]"
         >
             <div class="px-6 sm:px-16 py-8">
-                <div class="sm:mx-auto">
-                    <Logo />
+                <div class="mx-auto">
+                    <Logo/>
                 </div>
+
 
                 <div class="sm:mx-auto sm:w-full sm:max-w-sm text-center">
                     <h1 class="text-core-light-800 dark:text-core-dark-200">Reset Password</h1>

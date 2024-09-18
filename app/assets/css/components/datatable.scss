@@ -1,98 +1,27 @@
-.p-datatable {
+table.datatable {
+    @apply relative min-w-full border-collapse divide-y divide-slate-200 bg-core-light-100 dark:bg-core-dark-700 text-sm;
 
-    .p-datatable-header {
-        @apply border-none;
+    thead {
+        tr {
+            @apply bg-highlight-50 dark:bg-highlight-950;
+        }
+
+        th {
+            @apply h-8 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0;
+        }
     }
 
-    table {
-        @apply relative min-w-full border-collapse divide-y divide-slate-200 bg-core-light-100 dark:bg-core-dark-700;
-
-        thead {
-            position: sticky;
-            top: 0;
-            @apply bg-core-light-300 dark:bg-core-dark-900;
-            tr {
-                th, th div {
-                    @apply truncate font-bold;
-                }
-
-                // sort icons
-                th[role="columnheader"]:not(.p-selection-column) div {
-                    @apply flex flex-row justify-between;
-
-                    span[data-pc-section="sort"] {
-                        @apply cursor-pointer hover:text-core-light-400 dark:hover:text-core-dark-600;
-                    }
-                }
-            }
+    tbody {
+        tr.double-click:not(.disabled) {
+            @apply hover:bg-core-light-200 dark:hover:bg-core-dark-800 cursor-pointer;
         }
-
-        // table rows
-        thead tr, tbody tr {
-            th.text-right div span, td.text-right, td.text-right .component {
-                width: 100%;
-                text-align: right !important;
-            }
-
-            th.text-center div span, td.text-center, td.text-center div .component {
-                width: 100%;
-                text-align: center !important;
-            }
-
-            th.text-justify div span, td.text-justify, td.text-justify .component {
-                width: 100%;
-                text-align: justify !important;
-            }
-
-            th {
-                padding: 8px 4px !important;
-            }
-
-            td {
-                padding: 6px 4px !important;
-            }
-
-            th, td {
-                @apply relative overflow-hidden text-ellipsis border border-core-light-300 dark:border-core-dark-500 text-xs leading-4 xl:text-sm;
-                &>div {
-                    @apply truncate;
-                }
-            }
-        }
-
-        // table rows
-        tr.hidden {
-            display: none;
-        }
-
-        th.p-selection-column {
-            padding: 0 !important;
-        }
-
-        .p-selection-column {
-            width: 30px;
-            line-height: 1rem;
-
-            div[data-pc-section="columnheadercontent"] {
-                @apply relative inline-flex cursor-pointer select-none;
-            }
-
-            div[data-pc-extend="checkbox"] {
-                @apply flex items-center justify-center;
-            }
-
-            input[type="checkbox"] {
-                @apply w-full h-full absolute top-0 left-0 z-10 p-0 m-0 opacity-0 rounded-md outline-none border-2 border-core-light-400 dark:border-core-dark-600 appearance-none cursor-pointer;
-            }
-
-            div[data-pc-section="box"] {
-                @apply flex items-center justify-center w-6 h-6 sm:w-5 sm:h-5 rounded-md border border-core-light-400 dark:border-core-dark-600 bg-core-light-50 dark:bg-core-dark-200;
-            }
-        }
-
     }
 
-    &.p-datatable-hoverable .p-datatable-tbody > tr:not(.p-datatable-row-selected):hover {
-        @apply bg-core-light-200 dark:bg-core-dark-800 cursor-pointer;
+    tr {
+        @apply border-b data-[state=selected]:bg-muted;
+    }
+
+    td {
+        @apply px-2 py-1 align-middle [&:has([role=checkbox])]:pr-0;
     }
 }

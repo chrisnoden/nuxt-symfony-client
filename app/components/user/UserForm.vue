@@ -72,10 +72,10 @@ defineExpose({
 <template>
     <form
         v-if="data"
-        class="max-w-3xl mx-auto"
+        class="mx-auto max-w-3xl"
     >
         <div class="space-y-12 sm:space-y-16">
-            <div class="space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+            <div class="border-b border-gray-900/10 pb-12 space-y-8 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
 
                 <InputEnabledYesNo
                     v-model="data.enabled"

@@ -9,22 +9,24 @@ declare global {
             page?: number,
             perPage?: number,
             order?: string
-        ): Promise<{ data: T[], meta: ApiPaginationMeta }>
+        ): Promise<{ data: T[], meta: ApiMetaType }>
     }
 
     type ApiStandardResponse = {
         message: string,
     }
 
-    type ApiPaginationMeta = {
-        pagination: {
-            total: number,
-            count: number,
-            per_page: number,
-            current_page: number,
-            total_pages: number,
-            links: string[],
-        }
+    type ApiMetaType = {
+        pagination: ApiPaginationType,
+    }
+
+    type ApiPaginationType = {
+        total: number,
+        count: number,
+        per_page: number,
+        current_page: number,
+        total_pages: number,
+        links: string[],
     }
 
     type ClientType = {
