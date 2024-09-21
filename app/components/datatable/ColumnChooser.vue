@@ -5,14 +5,10 @@ import FieldLabel from '~/components/form/compact/FieldLabel.vue';
 import ToggleSwitch from '~/components/form/elements/ToggleSwitch.vue';
 import type { Column } from '@tanstack/vue-table';
 
-const props = defineProps<{
-    modelValue: Column<TData, TValue>[],
-}>()
-const emit = defineEmits<{
-    'update:modelValue': [columns: Column<TData, TValue>[]]
+defineProps<{
+    columns: Column<TData, TValue>[],
 }>()
 
-const columns = toRef<Column<TData, TValue>[]>(props.modelValue);
 const panelVisible = ref<boolean>(false);
 const target = ref(null)
 
@@ -20,7 +16,6 @@ onClickOutside(target, () => panelVisible.value = false);
 
 const onClickToggle = (column: Column<TData, TValue>, value: boolean) => {
     column.toggleVisibility(value)
-    emit('update:modelValue', columns.value);
 }
 </script>
 

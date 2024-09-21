@@ -6,6 +6,9 @@ export const columns: ColumnDef<UserType>[] = [
     {
         accessorKey: 'id',
         header: () => h('div', { }, 'UUID'),
+        meta: {
+            defaultVisible: false,
+        }
     },
     {
         accessorKey: 'client',

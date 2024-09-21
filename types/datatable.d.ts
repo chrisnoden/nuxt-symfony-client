@@ -1,10 +1,22 @@
 import type { Component } from 'vue'
+import type { ApiMetaType } from '~~/types/index';
 
 export {
 
 };
 
 declare global {
+    interface DataTableAwareApiClientContract<T> {
+        entity(): string,
+
+        search(
+            query?: { [key: string]: string | number | null, },
+            page?: number,
+            perPage?: number,
+            order?: string
+        ): Promise<{ data: T[], meta: ApiMetaType }>,
+    }
+
     // Used to define the column in a table
     type DataTableColumnType = {
         component?: Component,

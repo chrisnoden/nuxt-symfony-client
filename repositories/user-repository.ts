@@ -1,6 +1,10 @@
 import AbstractApiClient from '~~/repositories/abstract-api-client';
 
 export default class UserRepository extends AbstractApiClient implements DataTableAwareApiClientContract<UserType> {
+    entity(): string {
+        return 'user';
+    }
+
     create(user: UserNewType): Promise<UserType> {
         return super.put<UserType>(`user`, user);
     }

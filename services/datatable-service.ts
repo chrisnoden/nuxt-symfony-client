@@ -1,13 +1,15 @@
-import { cloneDeep, first, has, isInteger, isNaN, mergeWith } from 'lodash-es';
+import { cloneDeep, first, forEach, has, isInteger, isNaN, merge, mergeWith } from 'lodash-es';
+import { useStorage } from '@vueuse/core';
+import { type ColumnDef, getCoreRowModel, useVueTable, type VisibilityState } from '@tanstack/vue-table';
+import queryString from 'query-string';
 import ColumnComponent from '~/components/datatable/ColumnComponent.vue';
 import ColumnDataValue from '~/components/datatable/ColumnDataValue.vue';
-import queryString from 'query-string';
-import { type ColumnDef, getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 
 export class DatatableService<TData, TValue> {
     private _apiService: DataTableAwareApiClientContract<TData>;
     private _data = ref<TData[]>([]);
     private _meta = ref<ApiMetaType>();
+    private _state;
     private _vueTable;
     private _options: {
         query: {
@@ -22,7 +24,9 @@ export class DatatableService<TData, TValue> {
             page: 1,
             perPage: 25,
         }
+    public columns = ref();
     public isLoading = ref<boolean>(true);
+    public isReady = ref<boolean>(false);
     public renderKey = ref<number>(0);
 
     public data = computed((): Ref<TData[]> => {
@@ -42,16 +46,20 @@ export class DatatableService<TData, TValue> {
         }
     ) {
         this._apiService = apiService;
+        this._state = useStorage(`dt-${apiService.entity()}`, {
+            visibleColumns: this._setDefaultColumnVisibility(columns),
+        });
 
+        // set the tanstack / vue table properties
         this._vueTable = useVueTable({
             data: this.data.value,
             get columns() { return columns },
             getCoreRowModel: getCoreRowModel(),
-            // initialState: {
-            //     columnVisibility: state.value,
-            // }
+            initialState: {
+                columnVisibility: this._state.value.visibleColumns,
+            },
+            onColumnVisibilityChange: updaterOrValue => this._setColumnVisibility(updaterOrValue),
         })
-
 
         // set sort defaults
         if (undefined !== options.defaultSortField) {
@@ -62,6 +70,16 @@ export class DatatableService<TData, TValue> {
 
         // set any values from the URL
         this._setFiltersFromQuery();
+        this.columns.value = this._vueTable.getAllColumns();
+
+        this.isReady.value = true;
+    }
+
+    private _setColumnVisibility(v: unknown) {
+        if (typeof v === 'function') {
+            this._state.value.visibleColumns = merge(this._state.value.visibleColumns, v());
+            this.columns.value = this._vueTable.getAllColumns();
+        }
     }
 
     public async initialise(): Promise<void> {
@@ -93,17 +111,25 @@ export class DatatableService<TData, TValue> {
         this.isLoading.value = false;
     }
 
-    public getAllColumns = () => this._vueTable.getAllColumns();
-
     public getHeaderGroups = () => this._vueTable.getHeaderGroups();
-
-    public getRows = computed((): number => this._meta.value?.pagination.per_page ?? 0);
 
     public getRowModel = () => this._vueTable.getRowModel();
 
-    public getTotalRecords = computed(
-        (): number => this._meta.value?.pagination.total ?? 0
-    );
+    private _setDefaultColumnVisibility(columns: ColumnDef<TData, TValue>[]): VisibilityState {
+        const v: VisibilityState = {};
+        forEach(columns, (col) => {
+            if (has(col.meta, 'defaultVisible')) {
+                const value = col.meta.defaultVisible;
+                if (has(col, 'id')) {
+                    v[`${col.id}`] = value;
+                } else if (has(col, 'accessorKey')) {
+                    v[`${col.accessorKey}`] = value;
+                }
+            }
+        })
+
+        return  v;
+    }
 
     public async reload(): Promise<void> {
         await this._fetchData();
@@ -156,7 +182,7 @@ export class DatatableService<TData, TValue> {
 
     }
 
-    async _updateBrowserUrl(skipHistory?: boolean) {
+    private async _updateBrowserUrl(skipHistory?: boolean) {
         const router = useRouter();
 
         // update the browser URL

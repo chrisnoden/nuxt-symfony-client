@@ -3,15 +3,6 @@ export {
 };
 
 declare global {
-    interface DataTableAwareApiClientContract<T> {
-        search(
-            query?: { [key: string]: string | number | null, },
-            page?: number,
-            perPage?: number,
-            order?: string
-        ): Promise<{ data: T[], meta: ApiMetaType }>
-    }
-
     type ApiStandardResponse = {
         message: string,
     }
