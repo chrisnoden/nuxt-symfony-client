@@ -49,7 +49,6 @@ const rowClass = (row: UserType): string[] => {
                 :columns="columns"
                 default-sort-field="name"
                 double-click
-                entity="user"
                 :row-class="rowClass"
                 show-new-button
                 @click-new="onClickNew"

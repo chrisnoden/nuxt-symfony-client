@@ -22,7 +22,13 @@ declare global {
 
     type ClientType = {
         id: number,
-        name: string,
+        companyName: string,
+        enabled: boolean,
+    }
+
+    type ClientNewType = {
+        id?: number,
+        companyName?: string,
         enabled: boolean,
     }
 

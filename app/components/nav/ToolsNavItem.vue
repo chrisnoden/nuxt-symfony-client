@@ -8,6 +8,7 @@ import DropdownMenuItem from '~/components/nav/DropdownMenuItem.vue';
 const { type } = defineProps<{ type: 'desktop' | 'mobile' }>()
 
 const menuItems = [
+    { name: 'Client Administration', href: '/clients', roles: [ 'ROLE_CLIENT_ADMINISTRATION' ] },
     { name: 'User Administration', href: '/users', roles: [ 'ROLE_USER_ADMINISTRATION' ] },
 ]
 

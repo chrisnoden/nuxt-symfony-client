@@ -17,7 +17,6 @@ const props = defineProps<{
     columns: ColumnDef<TData, TValue>[],
     doubleClick?: boolean,
     defaultSortField?: string,
-    entity: string,
     hideColumnChooser?: boolean,
     // eslint-disable-next-line no-unused-vars
     rowClass?: (row: TData) => string|string[],
@@ -95,7 +94,7 @@ onMounted(() => {
                             class="flex w-fit justify-center rounded-md px-3 text-sm font-semibold uppercase leading-6 text-white shadow-sm bg-highlight-500 py-1.5 hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                             @click.prevent="$emit('clickNew')"
                         >
-                            + {{ entity ?? 'new' }}
+                            + {{ apiService.entity() ?? 'new' }}
                         </button>
                     </div>
                 </div>

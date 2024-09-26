@@ -148,7 +148,7 @@ fetchItems();
                             <div class="flex flex-col">
                                 <div class="flex items-center">
                                     <span class="truncate pl-2 font-semibold">
-                                        {{ item.name }}
+                                        {{ item.companyName }}
                                     </span>
                                 </div>
                             </div>
