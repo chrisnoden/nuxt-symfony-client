@@ -54,7 +54,8 @@ some of them in this project:
 
 - [TailwindCSS](https://tailwindcss.com/)
 - [HeadlessUI](https://headlessui.com/v1/vue)
-- [PrimeVue](https://primevue.org/) - principally for the DataTable
+- ~[PrimeVue](https://primevue.org/) - principally for the DataTable~
+- [ShadCN for Nuxt](https://nuxt.com/modules/shadcn) - I have switched to ShadCN instead of PrimeVue
 
 I also try very hard to do "TypeScript" (but can't promise I'm good at it)
 and I use the [composition API](https://vuejs.org/guide/extras/composition-api-faq.html)
