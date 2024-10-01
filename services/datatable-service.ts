@@ -2,8 +2,6 @@ import { cloneDeep, first, forEach, has, isInteger, isNaN, merge, mergeWith } fr
 import { useStorage } from '@vueuse/core';
 import { type ColumnDef, getCoreRowModel, useVueTable, type VisibilityState } from '@tanstack/vue-table';
 import queryString from 'query-string';
-import ColumnComponent from '~/components/datatable/ColumnComponent.vue';
-import ColumnDataValue from '~/components/datatable/ColumnDataValue.vue';
 
 export class DatatableService<TData, TValue> {
     private _apiService: DataTableAwareApiClientContract<TData>;
@@ -12,15 +10,15 @@ export class DatatableService<TData, TValue> {
     private _state;
     private _vueTable;
     private _options: {
-        query: {
+        query?: {
             [key: string]: string | number | null,
         },
-        order: string,
+        order?: string,
         page: number,
         perPage: number,
     } = {
-            query: {},
-            order: '',
+            query: undefined,
+            order: undefined,
             page: 1,
             perPage: 25,
         }
@@ -53,19 +51,20 @@ export class DatatableService<TData, TValue> {
         // set the tanstack / vue table properties
         this._vueTable = useVueTable({
             data: this.data.value,
+            enableSorting: true,
+            manualSorting: true,
             get columns() { return columns },
             getCoreRowModel: getCoreRowModel(),
             initialState: {
                 columnVisibility: this._state.value.visibleColumns,
             },
             onColumnVisibilityChange: updaterOrValue => this._setColumnVisibility(updaterOrValue),
+            onSortingChange: updaterOrValue => this._setSorting(updaterOrValue),
         })
 
         // set sort defaults
         if (undefined !== options.defaultSortField) {
             this._options.order = options.defaultSortField;
-        } else {
-            this._options.order = first(this._vueTable.getAllColumns())?.id ?? '';
         }
 
         // set any values from the URL
@@ -82,19 +81,29 @@ export class DatatableService<TData, TValue> {
         }
     }
 
+    private async _setSorting(v: unknown) {
+        if (typeof v === 'function' && v().length > 0) {
+            if (!has(v()[0], 'id')) {
+                return;
+            }
+            const { id } = v()[0];
+            if (this.getSortField() === id && this.getSortOrder() === 'asc') {
+                this._options.order = `-${id}`;
+            } else if (this.getSortField() === id && this.getSortOrder() === 'desc') {
+                this._options.order = undefined;
+            } else {
+                this._options.order = `${id}`;
+            }
+            this._options.page = 1;
+            await this._fetchData();
+            await this._updateBrowserUrl(false);
+            this.renderKey.value += 1;
+        }
+    }
+
     public async initialise(): Promise<void> {
         await this._fetchData();
     }
-
-    public columnTemplate(column: DataTableColumnType) {
-        if (has(column, 'component')) {
-            return ColumnComponent;
-        }
-
-        return ColumnDataValue;
-    }
-
-    public firstRow = computed(() => (this._meta.value?.pagination.per_page ?? 0) * ((this._meta.value?.pagination.current_page ?? 1) - 1));
 
     async _fetchData() {
         this.isLoading.value = true;
@@ -135,12 +144,20 @@ export class DatatableService<TData, TValue> {
         await this._fetchData();
     }
 
-    public sortField(): string {
+    public getSortField(): string|undefined {
+        if (undefined === this._options.order) {
+            return undefined;
+        }
+
         return this._options.order.substring(0, 1) === '-' ? this._options.order.substring(1) : this._options.order;
     }
 
-    public sortOrder(): number {
-        return this._options.order.substring(0, 1) === '-' ? -1 : 1;
+    public getSortOrder(): 'asc'|'desc'|undefined {
+        if (undefined === this._options.order) {
+            return undefined;
+        }
+
+        return this._options.order.substring(0, 1) === '-' ? 'desc' : 'asc';
     };
 
     public async onPaginationChange(pagination: ApiPaginationType): Promise<void> {

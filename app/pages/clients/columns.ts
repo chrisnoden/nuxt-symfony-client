@@ -20,6 +20,8 @@ export const columns: ColumnDef<ClientType>[] = [
         cell: ({ row }) => h('div', { class: '' },
             h(TrueFalseColumn, {
                 value: row.getValue('enabled') === true,
-            }))
+            })
+        ),
+        enableSorting: false,
     },
 ]

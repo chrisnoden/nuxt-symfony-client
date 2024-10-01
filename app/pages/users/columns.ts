@@ -8,10 +8,10 @@ export const columns: ColumnDef<UserType>[] = [
         header: () => h('div', { }, 'UUID'),
         meta: {
             defaultVisible: false,
-        }
+        },
     },
     {
-        accessorKey: 'client',
+        accessorKey: 'client.companyName',
         accessorFn: ((row: UserType) => row.client.name),
         header: () => h('div', { }, 'Client'),
     },
@@ -31,7 +31,9 @@ export const columns: ColumnDef<UserType>[] = [
         cell: ({ row }) => h('div', { class: '' },
             h(TrueFalseColumn, {
                 value: row.getValue('enabled') === true,
-            }))
+            })
+        ),
+        enableSorting: false,
     },
     {
         accessorKey: 'twoFactorEnabled',
@@ -39,6 +41,7 @@ export const columns: ColumnDef<UserType>[] = [
         header: () => h('div', { class: 'text-center' }, '2FA'),
         cell: ({ row }) => h(TrueFalseColumn, {
             value: row.getValue('enabled') === true,
-        })
+        }),
+        enableSorting: false,
     },
 ]

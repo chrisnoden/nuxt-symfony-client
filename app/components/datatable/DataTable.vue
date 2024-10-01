@@ -9,6 +9,7 @@ import {
     FlexRender,
 } from '@tanstack/vue-table'
 import { ArrowPathIcon } from '@heroicons/vue/24/outline';
+import { ArrowsUpDownIcon, BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/16/solid';
 import ColumnChooser from '~/components/datatable/ColumnChooser.vue';
 import Pagination from '~/components/datatable/Pagination.vue';
 
@@ -100,7 +101,7 @@ onMounted(() => {
                 </div>
             </slot>
 
-            <div class="border rounded-md">
+            <div class="rounded-md border">
                 <table v-if="datatable.isReady" ref="dt" class="datatable">
 
                     <thead>
@@ -113,11 +114,31 @@ onMounted(() => {
                                 :key="header.id"
                                 :style="styles(header)"
                             >
-                                <FlexRender
-                                    v-if="!header.isPlaceholder"
-                                    :render="header.column.columnDef.header"
-                                    :props="header.getContext()"
-                                />
+                                <div class="flex flex-row items-center gap-1 justify-stretch">
+                                    <FlexRender
+                                        v-if="!header.isPlaceholder"
+                                        class="flex-1"
+                                        :render="header.column.columnDef.header"
+                                        :props="header.getContext()"
+                                    />
+                                    <div v-if="header.column.getCanSort()">
+                                        <BarsArrowDownIcon
+                                            v-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'desc'"
+                                            class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
+                                            @click="header.column.toggleSorting()"
+                                        />
+                                        <BarsArrowUpIcon
+                                            v-else-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'asc'"
+                                            class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
+                                            @click="header.column.toggleSorting()"
+                                        />
+                                        <ArrowsUpDownIcon
+                                            v-else
+                                            class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
+                                            @click="header.column.toggleSorting()"
+                                        />
+                                    </div>
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -165,7 +186,7 @@ onMounted(() => {
             </div>
 
             <Pagination
-                class="py-4 flex justify-center"
+                class="flex justify-center py-4"
                 :pagination="datatable.meta.value?.pagination"
                 @change-page="datatable.onPaginationChange($event)"
             />

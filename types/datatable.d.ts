@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import type { ApiMetaType } from '~~/types/index';
+import type { ApiMetaType } from '~~/types/core';
 
 export {
 
