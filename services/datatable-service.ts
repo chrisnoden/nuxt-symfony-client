@@ -1,4 +1,4 @@
-import { cloneDeep, first, forEach, has, isInteger, isNaN, merge, mergeWith } from 'lodash-es';
+import { cloneDeep, forEach, has, isInteger, isNaN, merge, mergeWith } from 'lodash-es';
 import { useStorage } from '@vueuse/core';
 import { type ColumnDef, getCoreRowModel, useVueTable, type VisibilityState } from '@tanstack/vue-table';
 import queryString from 'query-string';

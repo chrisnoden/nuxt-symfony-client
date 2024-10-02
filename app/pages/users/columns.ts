@@ -5,7 +5,7 @@ import TrueFalseColumn from '~/components/datatable/column-types/TrueFalseColumn
 export const columns: ColumnDef<UserType>[] = [
     {
         accessorKey: 'id',
-        header: () => h('div', { }, 'UUID'),
+        header: 'UUID',
         meta: {
             defaultVisible: false,
         },
@@ -13,26 +13,23 @@ export const columns: ColumnDef<UserType>[] = [
     {
         accessorKey: 'client.companyName',
         accessorFn: ((row: UserType) => row.client.name),
-        header: () => h('div', { }, 'Client'),
+        header: 'Client',
     },
     {
         accessorKey: 'name',
-        header: () => h('div', { }, 'Name'),
+        header: 'Name',
     },
     {
         accessorKey: 'email',
-        header: () => h('div', { }, 'Email'),
+        header: 'Email',
     },
     {
         accessorKey: 'enabled',
-        enableResizing: true,
         size: 100,
         header: () => h('div', { class: 'text-center' }, 'Enabled'),
-        cell: ({ row }) => h('div', { class: '' },
-            h(TrueFalseColumn, {
-                value: row.getValue('enabled') === true,
-            })
-        ),
+        cell: ({ row }) => h(TrueFalseColumn, {
+            value: row.getValue('enabled') === true,
+        }),
         enableSorting: false,
     },
     {

@@ -78,13 +78,13 @@ const isModified = computed((): boolean => origValue !== value.value);
                     (disabled) && 'ring-core-light-100 dark:ring-core-dark-900',
                     (hasError && !disabled) && 'ring-red-600',
                 ]"
-                @input="$emit('input', $event.target?.value ?? '')"
+                @input="$emit('input', ($event.target as HTMLInputElement)?.value ?? '')"
             >
 
             <div
                 v-if="!disabled"
-                v-tooltip.left="{ value: error,
-                                  class: 'error' }"
+                v-tippy="{ content: error,
+                           placement: 'bottom' }"
                 class="md:absolute right-2 top-2 inline-flex items-center pt-1 md:pt-0"
                 :class="[
                     hasError ? 'visible' : 'invisible',

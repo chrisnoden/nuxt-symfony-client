@@ -21,7 +21,7 @@ defineProps<{
             <div class="flex h-12 justify-between">
                 <div class="flex">
                     <div class="flex flex-shrink-0 items-center">
-                        <Logo />
+                        <Logo class="h-[36px]" />
                     </div>
                     <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                         <DesktopNavLink

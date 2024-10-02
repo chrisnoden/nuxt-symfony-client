@@ -169,8 +169,8 @@ fetchItems();
 
             <div
                 v-if="!disabled"
-                v-tooltip.left="{ value: error,
-                                  class: 'error' }"
+                v-tippy="{ content: error,
+                           placement: 'bottom' }"
                 class="top-2 right-2 inline-flex items-center pt-1 md:absolute md:pt-0"
                 :class="[
                     hasError ? 'visible' : 'invisible',

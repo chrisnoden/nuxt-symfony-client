@@ -67,39 +67,39 @@ onMounted(() => {
 <template>
     <div class="relative mx-auto max-w-screen-2xl py-4 lg:py-0">
         <ClientOnly>
-            <slot name="header">
-                <div class="relative mb-2 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 xl:gap-6">
+            <div class="relative mb-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 xl:gap-x-6 xl:gap-y-3">
+                <slot name="filters" />
+
+                <div
+                    class="flex flex-row items-center justify-end gap-1"
+                    style="grid-column-end: -1;"
+                >
                     <div
-                        class="flex flex-row items-center justify-end gap-1"
-                        style="grid-column-end: -1;"
+                        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-core-light-50 group hover:bg-core-light-100 dark:bg-core-dark-950 dark:hover:bg-core-dark-900"
+                        @click="datatable.reload"
                     >
-                        <div
-                            class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-core-light-50 group hover:bg-core-light-100 dark:bg-core-dark-950 dark:hover:bg-core-dark-900"
-                            @click="datatable.reload"
-                        >
-                            <ArrowPathIcon
-                                class="h-6 w-6 text-highlight-300 group-hover:text-highlight-600"
-                            />
-                        </div>
-
-                        <ColumnChooser
-                            v-if="hideColumnChooser !== true"
-                            :columns="datatable.columns.value"
-                            class="flex-1"
-                            @update:model-value="datatable.renderKey.value += 1"
+                        <ArrowPathIcon
+                            class="h-6 w-6 text-highlight-300 group-hover:text-highlight-600"
                         />
-
-                        <button
-                            v-if="showNewButton"
-                            type="button"
-                            class="flex w-fit justify-center rounded-md px-3 text-sm font-semibold uppercase leading-6 text-white shadow-sm bg-highlight-500 py-1.5 hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                            @click.prevent="$emit('clickNew')"
-                        >
-                            + {{ apiService.entity() ?? 'new' }}
-                        </button>
                     </div>
+
+                    <ColumnChooser
+                        v-if="hideColumnChooser !== true"
+                        :columns="datatable.columns.value"
+                        class="flex-1"
+                        @update:model-value="datatable.renderKey.value += 1"
+                    />
+
+                    <button
+                        v-if="showNewButton"
+                        type="button"
+                        class="flex w-fit justify-center rounded-md px-3 text-sm font-semibold uppercase leading-6 text-white shadow-sm bg-highlight-500 py-1.5 hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                        @click.prevent="$emit('clickNew')"
+                    >
+                        + {{ apiService.entity() ?? 'new' }}
+                    </button>
                 </div>
-            </slot>
+            </div>
 
             <div class="rounded-md border">
                 <table v-if="datatable.isReady" ref="dt" class="datatable">
@@ -115,12 +115,14 @@ onMounted(() => {
                                 :style="styles(header)"
                             >
                                 <div class="flex flex-row items-center gap-1 justify-stretch">
-                                    <FlexRender
-                                        v-if="!header.isPlaceholder"
-                                        class="flex-1"
-                                        :render="header.column.columnDef.header"
-                                        :props="header.getContext()"
-                                    />
+                                    <div class="flex-1">
+                                        <FlexRender
+                                            v-if="!header.isPlaceholder"
+                                            :render="header.column.columnDef.header"
+                                            :props="header.getContext()"
+                                        />
+                                    </div>
+
                                     <div v-if="header.column.getCanSort()">
                                         <BarsArrowDownIcon
                                             v-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'desc'"
@@ -146,11 +148,12 @@ onMounted(() => {
                     <tbody>
                         <template v-if="datatable.getRowModel().rows?.length">
                             <tr
-                                v-for="row in datatable.getRowModel().rows"
+                                v-for="(row, idx) in datatable.getRowModel().rows"
                                 :key="row.id"
                                 :class="[
                                     doubleClick && 'double-click',
                                     rowClass && rowClass(row.original),
+                                    idx % 2 === 0 ? 'row-odd' : 'row-even',
                                 ]"
                                 :data-state="row.getIsSelected() ? 'selected' : undefined"
                                 @dblclick="onDoubleClick(row)"

@@ -1,5 +1,5 @@
 table.datatable {
-    @apply relative min-w-full border-collapse divide-y divide-slate-200 bg-core-light-100 dark:bg-core-dark-700 text-sm;
+    @apply relative min-w-full border-collapse divide-y divide-slate-200 text-sm;
 
     thead {
         tr {
@@ -15,10 +15,14 @@ table.datatable {
         tr.double-click:not(.disabled) {
             @apply hover:bg-core-light-200 dark:hover:bg-core-dark-800 cursor-pointer;
         }
+        tr.row-even {
+            @apply bg-core-light-100 dark:bg-core-dark-700;
+        }
     }
 
     tr {
         @apply border-b data-[state=selected]:bg-muted;
+
     }
 
     td {

@@ -5,12 +5,12 @@ import TrueFalseColumn from '~/components/datatable/column-types/TrueFalseColumn
 export const columns: ColumnDef<ClientType>[] = [
     {
         accessorKey: 'id',
-        header: () => h('div', { }, 'ID'),
+        header: 'ID',
     },
     {
         accessorKey: 'companyName',
         accessorFn: ((row: ClientType) => row.companyName),
-        header: () => h('div', { }, 'Company Name'),
+        header: 'Company Name',
     },
     {
         accessorKey: 'enabled',

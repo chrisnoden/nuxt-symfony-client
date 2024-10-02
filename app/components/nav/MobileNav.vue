@@ -32,7 +32,7 @@ const isCurrent = (link: string): boolean => route.path === link;
     <div class="w-full bg-menu-bg dark:bg-menu-bg-dark text-menu-fg dark:text-menu-fg-dark">
         <div class="flex justify-between items-center">
             <div class="flex flex-shrink-0 items-center ml-2">
-                <Logo />
+                <Logo class="h-[36px]" />
             </div>
 
             <div class="flex flex-row gap-4 items-center">
@@ -52,7 +52,7 @@ const isCurrent = (link: string): boolean => route.path === link;
                     <div class="w-full flex justify-between items-center">
 
                         <div class="flex flex-shrink-0 items-center ml-2">
-                            <Logo />
+                            <Logo class="h-[36px]" />
                         </div>
 
                         <div class="flex flex-row gap-4 items-center">
