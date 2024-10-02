@@ -10,7 +10,7 @@ declare global {
         entity(): string,
 
         search(
-            query?: { [key: string]: string | number | null, },
+            query?: unknown,
             page?: number,
             perPage?: number,
             order?: string

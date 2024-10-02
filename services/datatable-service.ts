@@ -1,4 +1,4 @@
-import { cloneDeep, forEach, has, isInteger, isNaN, merge, mergeWith } from 'lodash-es';
+import { cloneDeep, forEach, has, isInteger, isNaN, merge, mergeWith, omit } from 'lodash-es';
 import { useStorage } from '@vueuse/core';
 import { type ColumnDef, getCoreRowModel, useVueTable, type VisibilityState } from '@tanstack/vue-table';
 import queryString from 'query-string';
@@ -10,9 +10,7 @@ export class DatatableService<TData, TValue> {
     private _state;
     private _vueTable;
     private _options: {
-        query?: {
-            [key: string]: string | number | null,
-        },
+        query?: object,
         order?: string,
         page: number,
         perPage: number,
@@ -72,6 +70,29 @@ export class DatatableService<TData, TValue> {
         this.columns.value = this._vueTable.getAllColumns();
 
         this.isReady.value = true;
+
+        const route = useRoute();
+
+        watch(() => route.query, async (query) => {
+            this._options.query = omit(query, ['order', 'page', 'perPage']);
+
+            await this._fetchData();
+        })
+    }
+
+    private async _fetchData() {
+        this.isLoading.value = true;
+
+        const response = await this._apiService.search(
+            this._options.query,
+            this._options.page,
+            this._options.perPage,
+            this._options.order
+        );
+        this._data.value = response.data;
+        this._meta.value = response.meta;
+
+        this.isLoading.value = false;
     }
 
     private _setColumnVisibility(v: unknown) {
@@ -79,6 +100,39 @@ export class DatatableService<TData, TValue> {
             this._state.value.visibleColumns = merge(this._state.value.visibleColumns, v());
             this.columns.value = this._vueTable.getAllColumns();
         }
+    }
+
+    private _setDefaultColumnVisibility(columns: ColumnDef<TData, TValue>[]): VisibilityState {
+        const v: VisibilityState = {};
+        forEach(columns, (col) => {
+            if (has(col.meta, 'defaultVisible')) {
+                const value = col.meta.defaultVisible;
+                if (has(col, 'id')) {
+                    v[`${col.id}`] = value;
+                } else if (has(col, 'accessorKey')) {
+                    v[`${col.accessorKey}`] = value;
+                }
+            }
+        })
+
+        return  v;
+    }
+
+    private _setFiltersFromQuery(): void {
+        const route = useRoute();
+
+        this._options = mergeWith(cloneDeep(this._options), route.query, (objValue, srcValue) => {
+            if (isInteger(objValue) || /^[0-9]+$/.test(srcValue)) {
+                if (isNaN(parseInt(srcValue, 10))) {
+                    return null;
+                }
+
+                return parseInt(srcValue, 10);
+            }
+
+            return srcValue;
+        })
+
     }
 
     private async _setSorting(v: unknown) {
@@ -101,44 +155,26 @@ export class DatatableService<TData, TValue> {
         }
     }
 
-    public async initialise(): Promise<void> {
-        await this._fetchData();
+    private async _updateBrowserUrl(skipHistory?: boolean) {
+        const router = useRouter();
+
+        // update the browser URL
+        const qs = queryString.stringify(this._options, { skipNull: true, skipEmptyString: true });
+        const url = `?${qs}`;
+        if (true === skipHistory) {
+            await router.replace(url);
+        } else {
+            await router.push(url);
+        }
     }
 
-    async _fetchData() {
-        this.isLoading.value = true;
-
-        const response = await this._apiService.search(
-            this._options.query,
-            this._options.page,
-            this._options.perPage,
-            this._options.order
-        );
-        this._data.value = response.data;
-        this._meta.value = response.meta;
-
-        this.isLoading.value = false;
+    public async initialise(): Promise<void> {
+        await this._fetchData();
     }
 
     public getHeaderGroups = () => this._vueTable.getHeaderGroups();
 
     public getRowModel = () => this._vueTable.getRowModel();
-
-    private _setDefaultColumnVisibility(columns: ColumnDef<TData, TValue>[]): VisibilityState {
-        const v: VisibilityState = {};
-        forEach(columns, (col) => {
-            if (has(col.meta, 'defaultVisible')) {
-                const value = col.meta.defaultVisible;
-                if (has(col, 'id')) {
-                    v[`${col.id}`] = value;
-                } else if (has(col, 'accessorKey')) {
-                    v[`${col.accessorKey}`] = value;
-                }
-            }
-        })
-
-        return  v;
-    }
 
     public async reload(): Promise<void> {
         await this._fetchData();
@@ -167,48 +203,5 @@ export class DatatableService<TData, TValue> {
         await this._fetchData();
         await this._updateBrowserUrl(false);
         this.renderKey.value += 1;
-    }
-
-    public async onSort({ sortField, sortOrder }: { sortField: string, sortOrder: number }): Promise<void> {
-        if (sortOrder < 0) {
-            this._options.order = `-${sortField}`;
-        } else {
-            this._options.order = sortField;
-        }
-
-        this._options.page = 1;
-        await this._fetchData();
-        await this._updateBrowserUrl(false);
-        this.renderKey.value += 1;
-    }
-
-    private _setFiltersFromQuery(): void {
-        const route = useRoute();
-
-        this._options = mergeWith(cloneDeep(this._options), route.query, (objValue, srcValue) => {
-            if (isInteger(objValue) || /^[0-9]+$/.test(srcValue)) {
-                if (isNaN(parseInt(srcValue, 10))) {
-                    return null;
-                }
-
-                return parseInt(srcValue, 10);
-            }
-
-            return srcValue;
-        })
-
-    }
-
-    private async _updateBrowserUrl(skipHistory?: boolean) {
-        const router = useRouter();
-
-        // update the browser URL
-        const qs = queryString.stringify(this._options, { skipNull: true, skipEmptyString: true });
-        const url = `?${qs}`;
-        if (true === skipHistory) {
-            await router.replace(url);
-        } else {
-            await router.push(url);
-        }
     }
 }

@@ -2,6 +2,7 @@
 import UserRepository from '~~/repositories/user-repository';
 import { columns } from './columns'
 import DataTable from '~/components/datatable/DataTable.vue'
+import QuickSearchFilter from '~/components/datatable/filters/QuickSearchFilter.vue';
 
 definePageMeta({
     title: 'User Admin'
@@ -53,7 +54,11 @@ const rowClass = (row: UserType): string[] => {
                 show-new-button
                 @click-new="onClickNew"
                 @double-click="onRowDblClick"
-            />
+            >
+                <template #filters>
+                    <QuickSearchFilter />
+                </template>
+            </DataTable>
         </main>
     </div>
 </template>
