@@ -26,10 +26,6 @@ export default defineNuxtConfig({
         '~/assets/css/app.scss',
     ],
 
-    primevue: {
-        autoImport: false,
-    },
-
     routeRules: {
         '/api/login': {
             csurf: false
@@ -62,6 +58,16 @@ export default defineNuxtConfig({
          * @default "./components/ui"
          */
         componentDir: './components/ui'
+    },
+
+    vite: {
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    api: 'modern-compiler' // or "modern"
+                }
+            }
+        }
     },
 
     $development: {

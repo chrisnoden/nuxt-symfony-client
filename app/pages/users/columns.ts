@@ -26,6 +26,9 @@ export const columns: ColumnDef<UserType>[] = [
     {
         accessorKey: 'enabled',
         size: 100,
+        meta: {
+            label: 'Enabled', // ensures a nice label is used in the Column Chooser
+        },
         header: () => h('div', { class: 'text-center' }, 'Enabled'),
         cell: ({ row }) => h(TrueFalseColumn, {
             value: row.getValue('enabled') === true,
@@ -35,6 +38,9 @@ export const columns: ColumnDef<UserType>[] = [
     {
         accessorKey: 'twoFactorEnabled',
         size: 100,
+        meta: {
+            label: '2FA', // ensures a nice label is used in the Column Chooser
+        },
         header: () => h('div', { class: 'text-center' }, '2FA'),
         cell: ({ row }) => h(TrueFalseColumn, {
             value: row.getValue('enabled') === true,

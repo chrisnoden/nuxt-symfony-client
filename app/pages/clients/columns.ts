@@ -14,6 +14,9 @@ export const columns: ColumnDef<ClientType>[] = [
     },
     {
         accessorKey: 'enabled',
+        meta: {
+            label: 'Enabled', // ensures a nice label is used in the Column Chooser
+        },
         enableResizing: true,
         size: 100,
         header: () => h('div', { class: 'text-center' }, 'Enabled'),

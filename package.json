@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "nuxt build",
-    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 npx nuxi dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 nuxt dev --host fe.nss.wip --https --ssl-cert fe.nss.wip.pem --ssl-key fe.nss.wip-key.pem",
     "start": "node .output/server/index.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

@@ -38,9 +38,13 @@ yarn install
 Install a local certificate for SSL browsing:
 ```bash
 brew install mkcert
-mkcert localhost
+mkcert fe.nss.wip
 mkcert -install
 ```
+
+> You will need to edit your etc/hosts file (on MacOs this is `sudo vi /etc/hosts`)
+> add the line `127.0.0.1 fe.nss.wip`
+> 
 
 Start the development server and open a browser tab to it:
 ```bash

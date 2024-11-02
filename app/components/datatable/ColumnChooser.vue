@@ -1,9 +1,9 @@
 <script setup lang="ts" generic="TData, TValue">
+import type { Column } from '@tanstack/vue-table';
 import { ref } from 'vue';
 import { onClickOutside } from '@vueuse/core';
+import ColumnChooserLabel from '~/components/datatable/ColumnChooserLabel.vue';
 import FieldLabel from '~/components/form/compact/FieldLabel.vue';
-import ToggleSwitch from '~/components/form/elements/ToggleSwitch.vue';
-import type { Column } from '@tanstack/vue-table';
 
 defineProps<{
     columns: Column<TData, TValue>[],
@@ -13,10 +13,6 @@ const panelVisible = ref<boolean>(false);
 const target = ref(null)
 
 onClickOutside(target, () => panelVisible.value = false);
-
-const onClickToggle = (column: Column<TData, TValue>, value: boolean) => {
-    column.toggleVisibility(value)
-}
 </script>
 
 <template>
@@ -43,27 +39,13 @@ const onClickToggle = (column: Column<TData, TValue>, value: boolean) => {
                 top-[40px] w-[260px] max-w-[100vw] focus:outline-none sm:text-sm
             "
         >
-            <div class="px-4 py-2">
-                <template
-                    v-for="(column, idx) in columns.filter((column) => column.getCanHide())"
-                    :key="column.id"
-                >
-                    <div
-                        class="flex w-full flex-row items-center justify-between px-4 py-2"
-                        :class="idx % 2 ? 'bg-core-light-50 dark:bg-core-dark-950 rounded-md' : ''"
-                    >
-                        <div class="flex-1">
-                            {{ column.id }}
-                        </div>
-
-                        <ToggleSwitch
-                            :model-value="column.getIsVisible()"
-                            :label="column.id"
-                            @update:model-value="onClickToggle(column, $event)"
-                        />
-                    </div>
-                </template>
-            </div>
+            <ColumnChooserLabel
+                v-for="(column, idx) in columns.filter((column) => column.getCanHide())"
+                :key="column.id"
+                :column="column"
+                class="flex w-full flex-row items-center justify-between px-4 py-2"
+                :class="idx % 2 ? 'bg-core-light-50 dark:bg-core-dark-950 rounded-md' : ''"
+            />
         </div>
     </div>
 </template>
