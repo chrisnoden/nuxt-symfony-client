@@ -177,7 +177,11 @@ export class DatatableService<TData, TValue> {
     public getRowModel = () => this._vueTable.getRowModel();
 
     public async reload(): Promise<void> {
-        await this._fetchData();
+        this.isLoading.value = true;
+        this._data.value = [];
+        setTimeout(async () => {
+            await this._fetchData();
+        }, 200);
     }
 
     public getSortField(): string|undefined {

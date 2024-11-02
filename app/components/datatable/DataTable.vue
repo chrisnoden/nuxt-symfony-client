@@ -189,6 +189,7 @@ onMounted(() => {
             </div>
 
             <Pagination
+                v-if="!datatable.isLoading"
                 class="flex justify-center py-4"
                 :pagination="datatable.meta.value?.pagination"
                 @change-page="datatable.onPaginationChange($event)"
