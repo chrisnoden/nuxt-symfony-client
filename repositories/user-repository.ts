@@ -13,10 +13,10 @@ export default class UserRepository extends AbstractApiClient implements DataTab
         return super.get<UserType>(`user/${userId}`);
     }
 
-    search(query?: Record<string, string>, page?: number, perPage?: number, order?: string) {
+    search(filters?: Record<string, string>, page?: number, perPage?: number, order?: string) {
         return super.getPaginated<UserType>(
             'users',
-            query,
+            filters,
             page,
             perPage,
             order,

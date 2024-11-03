@@ -11,6 +11,7 @@ definePageMeta({
 const router = useRouter();
 const session = useSessionStore();
 const userRepository = new UserRepository();
+const filterBus = useEventBus(`dt-${userRepository.entity()}-filters`);
 
 const onClickNew = async() => {
     await router.push('/users/create');
@@ -56,7 +57,10 @@ const rowClass = (row: UserType): string[] => {
                 @double-click="onRowDblClick"
             >
                 <template #filters>
-                    <QuickSearchFilter />
+                    <QuickSearchFilter
+                        @input="filterBus.emit('setFilter', $event)"
+                        @submit="filterBus.emit('applyFilters')"
+                    />
                 </template>
             </DataTable>
         </main>

@@ -1,21 +1,23 @@
-import { cloneDeep, forEach, has, isInteger, isNaN, merge, mergeWith, omit } from 'lodash-es';
-import { useStorage } from '@vueuse/core';
+import type { RouteLocation } from 'vue-router';
 import { type ColumnDef, getCoreRowModel, useVueTable, type VisibilityState } from '@tanstack/vue-table';
+import { useStorage } from '@vueuse/core';
+import { cloneDeep, forEach, has, isEmpty, merge, omit } from 'lodash-es';
 import queryString from 'query-string';
 
 export class DatatableService<TData, TValue> {
     private _apiService: DataTableAwareApiClientContract<TData>;
     private _data = ref<TData[]>([]);
+    private _pendingFilters: Record<string, unknown> = {};
     private _meta = ref<ApiMetaType>();
     private _state;
     private _vueTable;
     private _options: {
-        query?: object,
+        filters?: object,
         order?: string,
         page: number,
         perPage: number,
     } = {
-            query: undefined,
+            filters: undefined,
             order: undefined,
             page: 1,
             perPage: 25,
@@ -45,6 +47,10 @@ export class DatatableService<TData, TValue> {
         this._state = useStorage(`dt-${apiService.entity()}`, {
             visibleColumns: this._setDefaultColumnVisibility(columns),
         });
+        const filterBus = useEventBus(`dt-${apiService.entity()}-filters`);
+        const route = useRoute();
+
+        this._options.perPage = this._defaultPerPage();
 
         // set the tanstack / vue table properties
         this._vueTable = useVueTable({
@@ -66,33 +72,57 @@ export class DatatableService<TData, TValue> {
         }
 
         // set any values from the URL
-        this._setFiltersFromQuery();
+        this._setFiltersFromQuery(route);
         this.columns.value = this._vueTable.getAllColumns();
 
         this.isReady.value = true;
 
-        const route = useRoute();
+        filterBus.on(async (type, props) => {
+            switch (type) {
+                case 'setFilter':
+                    forEach(props, (v, k) => this._pendingFilters[k] = v);
+                    break;
 
-        watch(() => route.query, async (query) => {
-            this._options.query = omit(query, ['order', 'page', 'perPage']);
-
-            await this._fetchData();
+                case 'applyFilters':
+                    await this._setQueryFromPendingFilters();
+            }
         })
+
+        watch(route, async (to) => {
+            await this.routeChange(to);
+        })
+    }
+
+    private _defaultPerPage(): number {
+        const env = useRuntimeConfig();
+
+        return parseInt(`${env.public.TABLE_PER_PAGE_DEFAULT ?? 25}`, 10);
     }
 
     private async _fetchData() {
         this.isLoading.value = true;
 
-        const response = await this._apiService.search(
-            this._options.query,
-            this._options.page,
-            this._options.perPage,
-            this._options.order
-        );
-        this._data.value = response.data;
-        this._meta.value = response.meta;
+        try {
+            const response = await this._apiService.search(
+                this._options.filters,
+                this._options.page,
+                this._options.perPage,
+                this._options.order
+            );
+
+            this._data.value = response.data;
+            this._meta.value = response.meta;
+            // eslint-disable-next-line no-unused-vars
+        } catch (e) { /* empty */ }
 
         this.isLoading.value = false;
+    }
+
+    private _resetOptions(): void {
+        this._options.order = undefined;
+        this._options.page = 1;
+        this._options.perPage = this._defaultPerPage();
+        this._options.filters = undefined;
     }
 
     private _setColumnVisibility(v: unknown) {
@@ -118,21 +148,52 @@ export class DatatableService<TData, TValue> {
         return  v;
     }
 
-    private _setFiltersFromQuery(): void {
+    private _setFiltersFromQuery(route: RouteLocation): void {
+        this._resetOptions();
+
+        const [ , query ] = route.fullPath.split('?', 2);
+
+        if (undefined === query || `${query}`.length <= 1) {
+            return;
+        }
+
+        const qry = queryString.parse(query as string);
+
+        // this._options.filters = filter(qry, (v, k) => !['order', 'page', 'perPage'].includes(k));
+        this._options.filters = omit(qry, ['order', 'page', 'perPage']) as object;
+
+        if (undefined !== qry.order) {
+            this._options.order = qry.order as string;
+        }
+        if (undefined !== qry.page) {
+            this._options.page = parseInt(`${qry.page as string}`, 10);
+        }
+        if (undefined !== qry.perPage) {
+            this._options.perPage = parseInt(`${qry.perPage as string}`, 10);
+        }
+    }
+
+    private async _setQueryFromPendingFilters(): Promise<void> {
+        const router = useRouter();
+        if (isEmpty(this._pendingFilters)) {
+            return;
+        }
+
+        const newFilters: Record<string, unknown> = {}
+        forEach(this._pendingFilters, (v, k) => {
+            newFilters[k] = v
+        });
+        this._options.filters = newFilters;
+        this._options.page = 1;
+
         const route = useRoute();
+        const query = omit(cloneDeep(route?.query ?? {}), ['page']);
+        forEach(this._options.filters, (v, k) => query[k] = v);
 
-        this._options = mergeWith(cloneDeep(this._options), route.query, (objValue, srcValue) => {
-            if (isInteger(objValue) || /^[0-9]+$/.test(srcValue)) {
-                if (isNaN(parseInt(srcValue, 10))) {
-                    return null;
-                }
+        const q = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
+        await router.push(`?${q}`);
 
-                return parseInt(srcValue, 10);
-            }
-
-            return srcValue;
-        })
-
+        this._pendingFilters = {};
     }
 
     private async _setSorting(v: unknown) {
@@ -179,9 +240,22 @@ export class DatatableService<TData, TValue> {
     public async reload(): Promise<void> {
         this.isLoading.value = true;
         this._data.value = [];
+        this._meta.value = undefined;
         setTimeout(async () => {
             await this._fetchData();
         }, 200);
+    }
+
+    public async routeChange(route: RouteLocation): Promise<void> {
+        this._setFiltersFromQuery(route);
+
+        await this._fetchData();
+    }
+
+    public async filtersApplied(filters: object): Promise<void> {
+        console.dir(filters);
+
+        await this._fetchData();
     }
 
     public getSortField(): string|undefined {

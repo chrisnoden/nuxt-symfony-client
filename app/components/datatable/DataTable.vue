@@ -68,6 +68,7 @@ onMounted(() => {
     <div class="relative mx-auto max-w-screen-2xl py-4 lg:py-0">
         <ClientOnly>
             <div class="relative mb-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 xl:gap-x-6 xl:gap-y-3">
+
                 <slot name="filters" />
 
                 <div
@@ -189,7 +190,6 @@ onMounted(() => {
             </div>
 
             <Pagination
-                v-if="!datatable.isLoading"
                 class="flex justify-center py-4"
                 :pagination="datatable.meta.value?.pagination"
                 @change-page="datatable.onPaginationChange($event)"

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ClearFieldIcon from '~/components/el/ClearFieldIcon.vue';
 import { has } from 'lodash-es';
+import ClearFieldIcon from '~/components/el/ClearFieldIcon.vue';
 
 const modelValue = defineModel<string|undefined>();
-const props = withDefaults(defineProps<{
+const { minLength, name } = withDefaults(defineProps<{
     clearable?: boolean,
     clearOnSubmit?: boolean,
     label?: string,
@@ -19,62 +19,56 @@ const props = withDefaults(defineProps<{
     maxLength: 255,
     placeholder: '',
 })
-const emit = defineEmits<{
-    submit: [value: string|undefined],
-}>()
+const emit = defineEmits(['input']);
 
-const onSubmit = (val: string|undefined) => {
-    modelValue.value = val;
-    emit('submit', val);
-    if (props.clearOnSubmit) {
+const currentValue = ref<string|undefined>(modelValue.value);
+const { query } = useRoute();
+
+const onInput = (v: string|undefined) => {
+    if (v && v.length >= minLength) {
+        modelValue.value = v;
+        emit('input', { [name]: modelValue.value });
+    } else {
+        if (undefined !== modelValue.value) {
+            emit('input', { [name]: undefined });
+        }
         modelValue.value = undefined;
     }
-};
-
-const onClear = () => {
-    modelValue.value = undefined;
 }
 
-onMounted(() => {
-    const route = useRoute();
-    if (has(route.query, props.name)) {
-        modelValue.value = `${route.query[props.name]}`;
-    }
-})
+const onClear = () => {
+    currentValue.value = undefined;
+    modelValue.value = undefined;
+    emit('input', {[name]: undefined });
+}
 
-watch(() => modelValue.value, (value) => {
-    const v = `${value?.trim()}`;
-    if (v === '' || undefined === value || null === value) {
-        addPropertyToRouteQuery(props.name, undefined)
-    } else if (v.length >= props.minLength) {
-        addPropertyToRouteQuery(props.name, v)
-    }
-})
+if (query && has(query, name)) {
+    currentValue.value = queryPropAsString(name);
+    onInput(queryPropAsString(name));
+}
 </script>
 
 <template>
-    <div
-        class="relative rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600"
-    >
+    <div class="relative rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600">
         <label
-            :for="name ?? 'text-input-filter'"
+            :for="name"
             class="absolute -mt-px inline-block bg-white px-1 text-xs font-medium text-gray-900 top-[-7px] left-[7px]"
         >{{ label }}</label>
 
         <input
             :id="name"
-            v-model="modelValue"
+            v-model="currentValue"
             :minlength="minLength"
             :maxlength="maxLength"
             type="text"
-            :name="name ?? 'text-input-filter'"
-            class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm pr-[20px]"
-            :placeholder="placeholder"
-            @keydown.enter="onSubmit(($event.target as HTMLInputElement)?.value)"
+            :name="name"
+            class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm pr-[62px]"
+            :placeholder="label"
+            @input.prevent="onInput(($event.target as HTMLInputElement)?.value)"
         >
 
         <ClearFieldIcon
-            v-show="modelValue && clearable"
+            v-show="currentValue"
             class="absolute right-1 top-[9px]"
             @click="onClear"
         />

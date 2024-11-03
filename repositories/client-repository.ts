@@ -13,10 +13,10 @@ export default class ClientRepository extends AbstractApiClient implements DataT
         return super.get<ClientType>(`client/${clientId}`);
     }
 
-    search(query?: Record<string, string>, page?: number, perPage?: number) {
+    search(filters?: Record<string, string>, page?: number, perPage?: number) {
         return super.getPaginated<ClientType>(
             'clients',
-            query,
+            filters,
             page,
             perPage,
         )

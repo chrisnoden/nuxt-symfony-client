@@ -1,5 +1,5 @@
 import { handleApiError } from '~/utils/handle-api-error';
-import { merge } from 'lodash-es';
+import { clone, merge } from 'lodash-es';
 
 export default abstract class AbstractApiClient {
     private _cookieString(): string {
@@ -34,17 +34,17 @@ export default abstract class AbstractApiClient {
 
     protected getPaginated<T>(
         endpoint: string,
-        query?: object,
+        filters?: object,
         page?: number,
         perPage?: number,
         order?: string,
     ): Promise<{ data: T[], meta: ApiMetaType }> {
         const env = useRuntimeConfig();
 
-        const params = merge(query, {
+        const params = merge(clone(filters), {
             order: order ?? undefined,
-            page: page ?? 1,
-            per_page: perPage ?? parseInt(`${env.public.TABLE_PER_PAGE_DEFAULT ?? 25}`, 10),
+            page: Math.abs(page ?? 1),
+            per_page: Math.abs(perPage ?? parseInt(`${env.public.TABLE_PER_PAGE_DEFAULT ?? 25}`, 10)),
         })
 
         return $fetch(
