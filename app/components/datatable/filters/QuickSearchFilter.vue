@@ -66,12 +66,10 @@ if (query && has(query, name)) {
 </script>
 
 <template>
-    <div
-        class="relative rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600"
-    >
+    <div class="relative rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600 dark:bg-black">
         <label
             :for="name"
-            class="absolute -mt-px inline-block bg-white px-1 text-xs font-medium text-gray-900 top-[-7px] left-[7px]"
+            class="absolute -mt-px inline-block bg-white px-1 text-xs font-medium text-cire-light-900 top-[-7px] left-[7px] dark:text-core-dark-100 dark:bg-black"
         >{{ label }}</label>
 
         <input
@@ -81,7 +79,7 @@ if (query && has(query, name)) {
             :maxlength="maxLength"
             type="text"
             :name="name"
-            class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm pr-[36px]"
+            class="block w-full border-0 bg-white p-0 text-core-light-900 placeholder-core-light-500 pr-[20px] focus:ring-0 dark:text-core-dark-100 dark:placeholder-core-dark-500 dark:bg-black sm:text-sm"
             :placeholder="label"
             @keydown.enter="onSubmit"
             @input.prevent="onInput"
@@ -96,7 +94,7 @@ if (query && has(query, name)) {
             <kbd
                 v-tippy="{ content: 'press return key to search',
                            placement: 'bottom' }"
-                class="px-1 py-1 text-xs font-semibold text-gray-900 bg-white border border-gray-200 rounded-md"
+                class="rounded-md border border-gray-200 bg-white px-1 py-1 text-xs font-semibold text-gray-900"
             >↲</kbd>
         </div>
 

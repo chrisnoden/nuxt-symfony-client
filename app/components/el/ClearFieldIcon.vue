@@ -4,7 +4,7 @@ import { XMarkIcon } from '@heroicons/vue/24/outline';
 
 <template>
     <XMarkIcon
-        class="w-5 h-5 z-10 text-gray-900 hover:text-red-500 cursor-pointer"
+        class="z-10 h-5 w-5 cursor-pointer text-core-light-900 hover:stroke-red-500 dark:text-core-dark-100"
         aria-hidden="true"
     />
 </template>
