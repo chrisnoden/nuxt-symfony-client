@@ -13,6 +13,7 @@ const emit = defineEmits<{
 }>()
 
 const filterBus = useEventBus(`dt-${dataTableEntity}-filters`);
+const route = useRoute();
 
 const currentValue = ref<string|undefined>(modelValue.value);
 const dirty = ref<boolean>(false);
@@ -21,7 +22,6 @@ const initialValue = ref<string|undefined>(modelValue.value);
 const label = 'Quick Search';
 const minLength = 3;
 const maxLength = 50;
-const { query } = useRoute();
 
 const emitValue = () => {
     emit('input', { [name]: modelValue.value });
@@ -55,14 +55,22 @@ const onClear = () => {
     filterBus.emit('applyFilters')
 }
 
-const showReturnTippy = computed(() => hasFocus.value && dirty.value && currentValue.value && currentValue.value.length >= minLength);
-
-if (query && has(query, name)) {
-    currentValue.value = queryPropAsString(name);
-    initialValue.value = queryPropAsString(name);
-    modelValue.value = queryPropAsString(name);
+const setInitialValues = (v: string|undefined) => {
+    currentValue.value = v;
+    initialValue.value = v;
+    modelValue.value = v;
     emitValue();
 }
+
+const showReturnTippy = computed(() => hasFocus.value && dirty.value && currentValue.value && currentValue.value.length >= minLength);
+
+if (route.query && has(route.query, name)) {
+    setInitialValues(queryPropAsString(name))
+}
+
+watch(route, () => {
+    setInitialValues(queryPropAsString(name))
+})
 </script>
 
 <template>

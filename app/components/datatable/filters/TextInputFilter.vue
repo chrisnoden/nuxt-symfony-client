@@ -22,7 +22,7 @@ const { dataTableEntity, minLength, name } = withDefaults(defineProps<{
 })
 const emit = defineEmits(['input']);
 
-const { query } = useRoute();
+const route = useRoute();
 const filterBus = useEventBus(`dt-${dataTableEntity}-filters`);
 
 const currentValue = ref<string|undefined>(modelValue.value);
@@ -54,12 +54,20 @@ const onClear = () => {
     emitValue();
 }
 
-if (query && has(query, name)) {
-    currentValue.value = queryPropAsString(name);
-    initialValue.value = queryPropAsString(name);
-    modelValue.value = queryPropAsString(name);
+const setInitialValues = (v: string|undefined) => {
+    currentValue.value = v;
+    initialValue.value = v;
+    modelValue.value = v;
     emitValue();
 }
+
+if (route.query && has(route.query, name)) {
+    setInitialValues(queryPropAsString(name))
+}
+
+watch(route, () => {
+    setInitialValues(queryPropAsString(name))
+})
 </script>
 
 <template>
