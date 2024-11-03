@@ -27,7 +27,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col outer-container">
         <MainNav/>
         <Notifications/>
 

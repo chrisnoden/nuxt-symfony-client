@@ -85,6 +85,7 @@ export class DatatableService<TData, TValue> {
 
                 case 'applyFilters':
                     await this._setQueryFromPendingFilters();
+                    filterBus.emit('filtersApplied');
             }
         })
 
@@ -233,30 +234,13 @@ export class DatatableService<TData, TValue> {
         await this._fetchData();
     }
 
+    public async applyFilters(): Promise<void> {
+        await this._setQueryFromPendingFilters();
+    }
+
     public getHeaderGroups = () => this._vueTable.getHeaderGroups();
 
     public getRowModel = () => this._vueTable.getRowModel();
-
-    public async reload(): Promise<void> {
-        this.isLoading.value = true;
-        this._data.value = [];
-        this._meta.value = undefined;
-        setTimeout(async () => {
-            await this._fetchData();
-        }, 200);
-    }
-
-    public async routeChange(route: RouteLocation): Promise<void> {
-        this._setFiltersFromQuery(route);
-
-        await this._fetchData();
-    }
-
-    public async filtersApplied(filters: object): Promise<void> {
-        console.dir(filters);
-
-        await this._fetchData();
-    }
 
     public getSortField(): string|undefined {
         if (undefined === this._options.order) {
@@ -281,5 +265,20 @@ export class DatatableService<TData, TValue> {
         await this._fetchData();
         await this._updateBrowserUrl(false);
         this.renderKey.value += 1;
+    }
+
+    public async reload(): Promise<void> {
+        this.isLoading.value = true;
+        this._data.value = [];
+        this._meta.value = undefined;
+        setTimeout(async () => {
+            await this._fetchData();
+        }, 200);
+    }
+
+    public async routeChange(route: RouteLocation): Promise<void> {
+        this._setFiltersFromQuery(route);
+
+        await this._fetchData();
     }
 }

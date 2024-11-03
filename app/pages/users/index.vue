@@ -3,6 +3,7 @@ import UserRepository from '~~/repositories/user-repository';
 import { columns } from './columns'
 import DataTable from '~/components/datatable/DataTable.vue'
 import QuickSearchFilter from '~/components/datatable/filters/QuickSearchFilter.vue';
+import TextInputFilter from '~/components/datatable/filters/TextInputFilter.vue';
 
 definePageMeta({
     title: 'User Admin'
@@ -11,7 +12,6 @@ definePageMeta({
 const router = useRouter();
 const session = useSessionStore();
 const userRepository = new UserRepository();
-const filterBus = useEventBus(`dt-${userRepository.entity()}-filters`);
 
 const onClickNew = async() => {
     await router.push('/users/create');
@@ -58,8 +58,13 @@ const rowClass = (row: UserType): string[] => {
             >
                 <template #filters>
                     <QuickSearchFilter
-                        @input="filterBus.emit('setFilter', $event)"
-                        @submit="filterBus.emit('applyFilters')"
+                        :data-table-entity="userRepository.entity()"
+                    />
+
+                    <TextInputFilter
+                        label="Email Address"
+                        name="email"
+                        :data-table-entity="userRepository.entity()"
                     />
                 </template>
             </DataTable>

@@ -8,10 +8,11 @@ import { DatatableService } from '~~/services/datatable-service';
 import {
     FlexRender,
 } from '@tanstack/vue-table'
-import { ArrowPathIcon } from '@heroicons/vue/24/outline';
+import { ArrowPathIcon, FunnelIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { ArrowsUpDownIcon, BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/16/solid';
 import ColumnChooser from '~/components/datatable/ColumnChooser.vue';
 import Pagination from '~/components/datatable/Pagination.vue';
+import { filter } from 'lodash-es';
 
 const props = defineProps<{
     apiService: DataTableAwareApiClientContract<TData>,
@@ -30,11 +31,14 @@ const emit = defineEmits<{
     selectionChange: [selectedRows: TData[]],
 }>()
 
+const filterBus = useEventBus(`dt-${props.apiService.entity()}-filters`);
+
 const datatable = new DatatableService<TData, TValue>(props.apiService, props.columns, {
     defaultSortField: props.defaultSortField,
 });
 
 const dt = ref();
+const dirtyFilters = ref<Record<string, boolean>>({});
 const selectedRows = ref([]);
 
 if (import.meta.client) {
@@ -51,11 +55,33 @@ const styles = (header: Header<TData, unknown>): string => {
     return arr.join(' ');
 }
 
+const onApplyFilters = async() => {
+    await datatable.applyFilters();
+    filterBus.emit('filtersApplied');
+}
+
 const onDoubleClick = (row: Row<TData>) => {
     if (props.doubleClick) {
         emit('doubleClick', row.original);
     }
 }
+
+filterBus.on(async (type, props) => {
+    switch (type) {
+        case 'dirtyFilters':
+            // console.log(props);
+            dirtyFilters.value[props.name] = props.value;
+            // console.log(dirtyFilters.value);
+            // console.log(filter(dirtyFilters.value, v => v).length > 0);
+            break;
+
+        case 'filtersApplied':
+            dirtyFilters.value = {};
+            break;
+    }
+})
+
+const hasDirtyFilters = computed((): boolean => filter(dirtyFilters.value, v => v).length > 0)
 
 onMounted(() => {
     if (import.meta.client) {
@@ -76,12 +102,21 @@ onMounted(() => {
                     style="grid-column-end: -1;"
                 >
                     <div
+                        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-green-400 py-1.5 group hover:bg-green-500"
+                        :class="[
+                            hasDirtyFilters && 'visible',
+                            !hasDirtyFilters && 'invisible',
+                        ]"
+                        @click="onApplyFilters()"
+                    >
+                        <FunnelIcon class="h-6 w-6 text-white"/>
+                    </div>
+
+                    <div
                         class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-core-light-50 group hover:bg-core-light-100 dark:bg-core-dark-950 dark:hover:bg-core-dark-900"
                         @click="datatable.reload"
                     >
-                        <ArrowPathIcon
-                            class="h-6 w-6 text-highlight-300 group-hover:text-highlight-600"
-                        />
+                        <ArrowPathIcon class="h-6 w-6 text-highlight-300 group-hover:text-highlight-600"/>
                     </div>
 
                     <ColumnChooser
@@ -94,10 +129,10 @@ onMounted(() => {
                     <button
                         v-if="showNewButton"
                         type="button"
-                        class="flex w-fit justify-center rounded-md px-3 text-sm font-semibold uppercase leading-6 text-white shadow-sm bg-highlight-500 py-1.5 hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                        class="flex justify-center rounded-md px-2 text-sm font-semibold uppercase leading-6 text-white shadow-sm bg-highlight-500 py-1.5 group hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                         @click.prevent="$emit('clickNew')"
                     >
-                        + {{ apiService.entity() ?? 'new' }}
+                        <PlusIcon class="h-6 w-6 text-white group-hover:text-core-light-100" />
                     </button>
                 </div>
             </div>

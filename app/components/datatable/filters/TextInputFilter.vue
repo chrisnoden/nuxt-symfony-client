@@ -3,9 +3,10 @@ import { has } from 'lodash-es';
 import ClearFieldIcon from '~/components/el/ClearFieldIcon.vue';
 
 const modelValue = defineModel<string|undefined>();
-const { minLength, name } = withDefaults(defineProps<{
+const { dataTableEntity, minLength, name } = withDefaults(defineProps<{
     clearable?: boolean,
     clearOnSubmit?: boolean,
+    dataTableEntity: string,
     label?: string,
     minLength?: number,
     maxLength?: number,
@@ -21,30 +22,43 @@ const { minLength, name } = withDefaults(defineProps<{
 })
 const emit = defineEmits(['input']);
 
-const currentValue = ref<string|undefined>(modelValue.value);
 const { query } = useRoute();
+const filterBus = useEventBus(`dt-${dataTableEntity}-filters`);
 
-const onInput = (v: string|undefined) => {
-    if (v && v.length >= minLength) {
-        modelValue.value = v;
-        emit('input', { [name]: modelValue.value });
-    } else {
-        if (undefined !== modelValue.value) {
-            emit('input', { [name]: undefined });
-        }
+const currentValue = ref<string|undefined>(modelValue.value);
+const initialValue = ref<string|undefined>(modelValue.value);
+const dirty = ref<boolean>(false);
+const hasFocus = ref<boolean>(false);
+
+const emitValue = () => {
+    emit('input', { [name]: modelValue.value });
+    filterBus.emit('setFilter', { [name]: modelValue.value })
+    filterBus.emit('dirtyFilters', { name, value: dirty.value });
+}
+
+const onInput = () => {
+    if (!currentValue.value || currentValue.value.length < minLength) {
         modelValue.value = undefined;
+    } else {
+        modelValue.value = currentValue.value;
     }
+
+    dirty.value = modelValue.value !== initialValue.value;
+    emitValue();
 }
 
 const onClear = () => {
     currentValue.value = undefined;
     modelValue.value = undefined;
-    emit('input', {[name]: undefined });
+    dirty.value = currentValue.value !== initialValue.value;
+    emitValue();
 }
 
 if (query && has(query, name)) {
     currentValue.value = queryPropAsString(name);
-    onInput(queryPropAsString(name));
+    initialValue.value = queryPropAsString(name);
+    modelValue.value = queryPropAsString(name);
+    emitValue();
 }
 </script>
 
@@ -62,9 +76,11 @@ if (query && has(query, name)) {
             :maxlength="maxLength"
             type="text"
             :name="name"
-            class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm pr-[62px]"
+            class="block w-full border-0 p-0 text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm pr-[20px]"
             :placeholder="label"
-            @input.prevent="onInput(($event.target as HTMLInputElement)?.value)"
+            @input.prevent="onInput"
+            @focusin="hasFocus = true"
+            @focusout="hasFocus = false"
         >
 
         <ClearFieldIcon
