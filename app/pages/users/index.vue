@@ -64,6 +64,7 @@ const rowClass = (row: UserType): string[] => {
                     <TextInputFilter
                         label="Email Address"
                         name="email"
+                        :min-length="3"
                         :data-table-entity="userRepository.entity()"
                     />
                 </template>
