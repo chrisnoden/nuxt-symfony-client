@@ -3,32 +3,30 @@ import { has } from 'lodash-es';
 import ClearFieldIcon from '~/components/el/ClearFieldIcon.vue';
 
 const modelValue = defineModel<string|undefined>();
-const { dataTableEntity, minLength, name } = withDefaults(defineProps<{
-    clearable?: boolean,
-    clearOnSubmit?: boolean,
+const {
+    dataTableEntity,
+    label = 'Text Input',
+    minLength = 1,
+    maxLength = 255,
+    name,
+    placeholder,
+} = defineProps<{
     dataTableEntity: string,
     label?: string,
     minLength?: number,
     maxLength?: number,
     name: string,
     placeholder?: string,
-}>(), {
-    clearable: false,
-    clearOnSubmit: false,
-    label: 'Text Input',
-    minLength: 1,
-    maxLength: 255,
-    placeholder: '',
-})
+}>()
 const emit = defineEmits(['input']);
 
 const route = useRoute();
 const filterBus = useEventBus(`dt-${dataTableEntity}-filters`);
 
 const currentValue = ref<string|undefined>(modelValue.value);
-const initialValue = ref<string|undefined>(modelValue.value);
 const dirty = ref<boolean>(false);
 const hasFocus = ref<boolean>(false);
+const initialValue = ref<string|undefined>(modelValue.value);
 
 const emitValue = () => {
     emit('input', { [name]: modelValue.value });
@@ -85,7 +83,7 @@ watch(route, () => {
             type="text"
             :name="name"
             class="block w-full border-0 bg-white p-0 text-core-light-900 placeholder-core-light-500 pr-[20px] focus:ring-0 dark:text-core-dark-100 dark:placeholder-core-dark-500 dark:bg-black sm:text-sm"
-            :placeholder="label"
+            :placeholder="placeholder ?? label"
             @input.prevent="onInput"
             @focusin="hasFocus = true"
             @focusout="hasFocus = false"
