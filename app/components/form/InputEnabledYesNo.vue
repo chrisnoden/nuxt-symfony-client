@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import FieldLabel from '~/components/form/FieldLabel.vue';
 
-const value = defineModel<string>();
+const value = defineModel<boolean>({ required: true });
 withDefaults(defineProps<{
     disabled?: boolean
     label?: string,

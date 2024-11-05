@@ -42,33 +42,6 @@ declare global {
         rememberMe: boolean,
     }
 
-    type UserType = {
-        id: string,
-        client: {
-            id: number,
-            name: string,
-            enabled: boolean,
-        },
-        name: string,
-        email: string,
-        roles: string[],
-        active: boolean,
-        enabled: boolean,
-        twoFactorEnabled: boolean,
-    }
-
-    type UserNewType = {
-        client?: {
-            id: number,
-            name: string,
-            enabled: boolean,
-        },
-        name?: string,
-        email?: string,
-        roles: string[],
-        enabled: boolean,
-    }
-
     type ValidationErrorType = {
         field: string,
         message: string,

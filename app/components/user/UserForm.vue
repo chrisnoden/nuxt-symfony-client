@@ -42,10 +42,10 @@ const onClickSave = async() => {
         let u:UserType;
         if (props.isNew) {
             // create a new user
-            u = await users.create(<UserNewType>data);
+            u = await users.create(data as UserNewType);
             notifications.success('User created');
         } else {
-            u = await users.update(<UserType>data);
+            u = await users.update(data as UserType);
             user.value = u;
             notifications.success('User data successfully updated');
             editable.value = false;
@@ -93,6 +93,7 @@ defineExpose({
                 <InputCommon
                     v-model="data.name"
                     :disabled="!editable"
+                    disable-password-manager
                     :errors="errors.validationErrors.value"
                     label="Name"
                     name="name"
@@ -102,6 +103,7 @@ defineExpose({
                 <InputCommon
                     v-model="data.email"
                     :disabled="!editable"
+                    disable-password-manager
                     :errors="errors.validationErrors.value"
                     label="Email address"
                     name="email"

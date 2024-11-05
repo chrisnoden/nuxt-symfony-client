@@ -17,9 +17,9 @@ const emit = defineEmits<{
     'saved': [user: ClientType],
 }>()
 
+const clients = new ClientRepository();
 const errors = new ApiErrorService();
 const isSaving = ref<boolean>(false);
-const clients = new ClientRepository();
 
 // The data we will modify is a clone of the original user data
 const data = reactive<ClientType|ClientNewType>(cloneDeep(client.value));
@@ -39,10 +39,10 @@ const onClickSave = async() => {
         let c:ClientType;
         if (props.isNew) {
             // create a new client
-            c = await clients.create(<ClientNewType>data);
+            c = await clients.create(data as ClientNewType);
             notifications.success('User created');
         } else {
-            c = await clients.update(<ClientType>data);
+            c = await clients.update(data as ClientType);
             client.value = c;
             notifications.success('User data successfully updated');
             editable.value = false;
@@ -73,6 +73,7 @@ defineExpose({
             <div class="border-b border-gray-900/10 pb-12 space-y-8 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
 
                 <InputEnabledYesNo
+                    v-if="client.id !== 1"
                     v-model="data.enabled"
                     :disabled="!editable"
                     label="Enabled"

@@ -7,6 +7,7 @@ const value = defineModel<string>();
 const props = withDefaults(defineProps<{
     autocomplete?: string,
     disabled?: boolean
+    disablePasswordManager?: boolean,
     errors?: ValidationErrorType[],
     label?: string,
     minLength?: number,
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<{
 }>(), {
     autocomplete: 'off',
     disabled: false,
+    disablePasswordManager: false,
     errors: undefined,
     label: undefined,
     minLength: 3,
@@ -49,7 +51,7 @@ const isModified = computed((): boolean => origValue !== value.value);
 </script>
 
 <template>
-    <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+    <div class="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4 sm:py-6">
         <div>
             <FieldLabel :name="name">{{ label ?? 'Input' }}</FieldLabel>
         </div>
@@ -58,7 +60,11 @@ const isModified = computed((): boolean => origValue !== value.value);
             <input
                 :id="name"
                 v-model="value"
-                :autocomplete="autocomplete"
+                :autocomplete="disablePasswordManager ? 'off' : autocomplete"
+                :data-1p-ignore="disablePasswordManager"
+                :data-bwignore="disablePasswordManager"
+                :data-1pignore="disablePasswordManager"
+                :data-form-type="disablePasswordManager && 'other'"
                 :disabled="disabled"
                 :minlength="minLength"
                 :maxlength="maxLength"

@@ -3,12 +3,6 @@ import { filter, find } from 'lodash-es';
 import FieldLabel from '~/components/form/FieldLabel.vue';
 import RoleItem from '~/components/form/elements/RoleItem.vue';
 
-type RoleType = {
-    name: string,
-    description: string,
-    role: Roles,
-}
-
 const session = useSessionStore();
 const userRoles = defineModel<Roles[]>({ required: true});
 const props = withDefaults(defineProps<{
