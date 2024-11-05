@@ -29,4 +29,8 @@ declare global {
         visible: boolean,
         width?: number,
     }
+
+    type SelectedRowType<T> = T & {
+        _idx: number,
+    }
 }

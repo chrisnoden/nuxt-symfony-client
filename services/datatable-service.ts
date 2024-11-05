@@ -1,14 +1,16 @@
 import type { RouteLocation } from 'vue-router';
 import { type ColumnDef, getCoreRowModel, useVueTable, type VisibilityState } from '@tanstack/vue-table';
 import { useStorage } from '@vueuse/core';
-import { cloneDeep, forEach, has, isEmpty, merge, omit } from 'lodash-es';
+import { cloneDeep, filter, find, forEach, has, isEmpty, merge, omit, sortBy } from 'lodash-es';
 import queryString from 'query-string';
 
 export class DatatableService<TData, TValue> {
     private _apiService: DataTableAwareApiClientContract<TData>;
     private _data = ref<TData[]>([]);
+    private _filterBus;
     private _pendingFilters: Record<string, unknown> = {};
     private _meta = ref<ApiMetaType>();
+    private _selectedRows: SelectedRowType<TData>[] = ([]);
     private _state;
     private _vueTable;
     private _options: {
@@ -47,7 +49,7 @@ export class DatatableService<TData, TValue> {
         this._state = useStorage(`dt-${apiService.entity()}`, {
             visibleColumns: this._setDefaultColumnVisibility(columns),
         });
-        const filterBus = useEventBus(`dt-${apiService.entity()}-filters`);
+        this._filterBus = useEventBus(`dt-${apiService.entity()}-filters`);
         const route = useRoute();
 
         this._options.perPage = this._defaultPerPage();
@@ -77,7 +79,7 @@ export class DatatableService<TData, TValue> {
 
         this.isReady.value = true;
 
-        filterBus.on(async (type, props) => {
+        this._filterBus.on(async (type, props) => {
             switch (type) {
                 case 'setFilter':
                     forEach(props, (v, k) => this._pendingFilters[k] = v);
@@ -85,7 +87,7 @@ export class DatatableService<TData, TValue> {
 
                 case 'applyFilters':
                     await this._setQueryFromPendingFilters();
-                    filterBus.emit('filtersApplied');
+                    this._filterBus.emit('filtersApplied');
             }
         })
 
@@ -124,6 +126,8 @@ export class DatatableService<TData, TValue> {
         this._options.page = 1;
         this._options.perPage = this._defaultPerPage();
         this._options.filters = undefined;
+        this._selectedRows = [];
+        this._filterBus.emit('selectionChange', this._selectedRows);
     }
 
     private _setColumnVisibility(v: unknown) {
@@ -242,6 +246,8 @@ export class DatatableService<TData, TValue> {
 
     public getRowModel = () => this._vueTable.getRowModel();
 
+    public getSelectedRows = (): SelectedRowType<TData>[] => this._selectedRows;
+
     public getSortField(): string|undefined {
         if (undefined === this._options.order) {
             return undefined;
@@ -258,9 +264,14 @@ export class DatatableService<TData, TValue> {
         return this._options.order.substring(0, 1) === '-' ? 'desc' : 'asc';
     };
 
+    public isSelected = (rowIdx: number): boolean => undefined !== find(this._selectedRows, (row: SelectedRowType<TData>) => row._idx === rowIdx);
+    public isAllRowsSelected = (): boolean => this._selectedRows.length >= this._data.value.length;
+
     public async onPaginationChange(pagination: ApiPaginationType): Promise<void> {
         this._options.page = pagination.current_page;
         this._options.perPage = pagination.per_page;
+        this._selectedRows = [];
+        this._filterBus.emit('selectionChange', this._selectedRows);
 
         await this._fetchData();
         await this._updateBrowserUrl(false);
@@ -271,6 +282,9 @@ export class DatatableService<TData, TValue> {
         this.isLoading.value = true;
         this._data.value = [];
         this._meta.value = undefined;
+        this._selectedRows = [];
+        this._filterBus.emit('selectionChange', this._selectedRows);
+
         setTimeout(async () => {
             await this._fetchData();
         }, 200);
@@ -280,5 +294,41 @@ export class DatatableService<TData, TValue> {
         this._setFiltersFromQuery(route);
 
         await this._fetchData();
+    }
+
+    public selectAllRows(selected: boolean): void
+    {
+        this._selectedRows = [];
+        if (selected) {
+            forEach(this._data.value, (row, idx) => {
+                const rowValue: SelectedRowType<TData> = cloneDeep(row) as SelectedRowType<TData>;
+                rowValue._idx = idx;
+                this._selectedRows.push(rowValue);
+            })
+        }
+
+        this._filterBus.emit('selectionChange', this._selectedRows);
+    }
+
+    public selectRow(rowIdx: number): void
+    {
+        const rowValue: SelectedRowType<TData> = cloneDeep(this._data.value[rowIdx]) as SelectedRowType<TData>;
+        if (undefined === rowValue || null === rowValue) {
+            return;
+        }
+
+        rowValue._idx = rowIdx;
+        const isSelected = undefined !== find(this._selectedRows, (row) => row._idx === rowIdx);
+
+        if (isSelected) {
+            this._selectedRows = filter(this._selectedRows, (row) => row._idx !== rowIdx);
+        } else {
+            // add the row
+            this._selectedRows.push(rowValue);
+            // sort the rows
+            this._selectedRows = sortBy(this._selectedRows, '_idx');
+        }
+
+        this._filterBus.emit('selectionChange', this._selectedRows);
     }
 }

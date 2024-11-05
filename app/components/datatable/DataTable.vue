@@ -4,6 +4,7 @@ import type {
     Header,
     Row,
 } from '@tanstack/vue-table'
+import { filter } from 'lodash-es';
 import { DatatableService } from '~~/services/datatable-service';
 import {
     FlexRender,
@@ -12,7 +13,7 @@ import { ArrowPathIcon, FunnelIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { ArrowsUpDownIcon, BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/16/solid';
 import ColumnChooser from '~/components/datatable/ColumnChooser.vue';
 import Pagination from '~/components/datatable/Pagination.vue';
-import { filter } from 'lodash-es';
+import RowSelectCheckbox from '~/components/datatable/RowSelectCheckbox.vue';
 
 const props = defineProps<{
     apiService: DataTableAwareApiClientContract<TData>,
@@ -28,7 +29,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     clickNew: [],
     doubleClick: [row: TData],
-    selectionChange: [selectedRows: TData[]],
+    selectionChange: [selectedRows: SelectedRowType<TData>[]],
 }>()
 
 const filterBus = useEventBus(`dt-${props.apiService.entity()}-filters`);
@@ -39,7 +40,7 @@ const datatable = new DatatableService<TData, TValue>(props.apiService, props.co
 
 const dt = ref();
 const dirtyFilters = ref<Record<string, boolean>>({});
-const selectedRows = ref([]);
+const selectionKey = ref<number>(0);
 
 if (import.meta.client) {
     await datatable.initialise();
@@ -55,28 +56,39 @@ const styles = (header: Header<TData, unknown>): string => {
     return arr.join(' ');
 }
 
-const onApplyFilters = async() => {
+const onApplyFilters = async():Promise<void> => {
     await datatable.applyFilters();
     filterBus.emit('filtersApplied');
 }
 
-const onDoubleClick = (row: Row<TData>) => {
+const onDoubleClick = (row: Row<TData>):void => {
     if (props.doubleClick) {
         emit('doubleClick', row.original);
     }
 }
 
+const onSelectAll = ():void => {
+    datatable.selectAllRows(!datatable.isAllRowsSelected());
+    selectionKey.value += 1;
+}
+
+const onSelectRow = (idx: number): void => {
+    datatable.selectRow(idx);
+    selectionKey.value += 1;
+}
+
 filterBus.on(async (type, props) => {
     switch (type) {
         case 'dirtyFilters':
-            // console.log(props);
             dirtyFilters.value[props.name] = props.value;
-            // console.log(dirtyFilters.value);
-            // console.log(filter(dirtyFilters.value, v => v).length > 0);
             break;
 
         case 'filtersApplied':
             dirtyFilters.value = {};
+            break;
+
+        case 'selectionChange':
+            emit('selectionChange', props as SelectedRowType<TData>[]);
             break;
     }
 })
@@ -146,6 +158,16 @@ onMounted(() => {
                             :key="headerGroup.id"
                         >
                             <th
+                                v-if="selectable"
+                                class="w-[36px]"
+                            >
+                                <RowSelectCheckbox
+                                    :key="selectionKey"
+                                    :checked="datatable.isAllRowsSelected()"
+                                    @change="onSelectAll"
+                                />
+                            </th>
+                            <th
                                 v-for="header in headerGroup.headers"
                                 :key="header.id"
                                 :style="styles(header)"
@@ -194,6 +216,15 @@ onMounted(() => {
                                 :data-state="row.getIsSelected() ? 'selected' : undefined"
                                 @dblclick="onDoubleClick(row)"
                             >
+                                <td
+                                    v-if="selectable"
+                                >
+                                    <RowSelectCheckbox
+                                        :checked="datatable.isSelected(idx)"
+                                        :idx="idx"
+                                        @change="onSelectRow(idx)"
+                                    />
+                                </td>
                                 <td
                                     v-for="cell in row.getAllCells()"
                                     :key="cell.id"
