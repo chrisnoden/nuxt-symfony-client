@@ -4,6 +4,7 @@
 html {
     // our base font size
     font-size: 16px;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -28,7 +29,7 @@ body {
     }
 
     .outer-container {
-        width: 100vw;
+//        width: 100vw;
         /* elements inside won't be affected by scrollbars */
         display: flex;
         align-items: start;
