@@ -13,17 +13,12 @@ export class DatatableService<TData, TValue> {
     private _selectedRows: SelectedRowType<TData>[] = ([]);
     private _state;
     private _vueTable;
-    private _options: {
-        filters?: object,
-        order?: string,
-        page: number,
-        perPage: number,
-    } = {
-            filters: undefined,
-            order: undefined,
-            page: 1,
-            perPage: 25,
-        }
+    private _options: DataTableOptionsType = {
+        filters: undefined,
+        order: undefined,
+        page: 1,
+        perPage: 25,
+    }
     public columns = ref();
     public isLoading = ref<boolean>(true);
     public isReady = ref<boolean>(false);
@@ -104,13 +99,14 @@ export class DatatableService<TData, TValue> {
 
     private async _fetchData() {
         this.isLoading.value = true;
+        const options = this._getOptions();
 
         try {
             const response = await this._apiService.search(
-                this._options.filters,
-                this._options.page,
-                this._options.perPage,
-                this._options.order
+                options.filters,
+                options.page,
+                options.perPage,
+                options.order
             );
 
             this._data.value = response.data;
@@ -119,6 +115,14 @@ export class DatatableService<TData, TValue> {
         } catch (e) { /* empty */ }
 
         this.isLoading.value = false;
+    }
+
+    private _getOptions(): DataTableOptionsType {
+        if (isEmpty(this._options.filters) || !this._options.filters) {
+            this._options.filters = undefined;
+        }
+
+        return this._options;
     }
 
     private _resetOptions(): void {
@@ -164,8 +168,7 @@ export class DatatableService<TData, TValue> {
 
         const qry = queryString.parse(query as string);
 
-        // this._options.filters = filter(qry, (v, k) => !['order', 'page', 'perPage'].includes(k));
-        this._options.filters = omit(qry, ['order', 'page', 'perPage']) as object;
+        this._options.filters = omit(qry, ['filters', 'order', 'page', 'perPage']) as object;
 
         if (undefined !== qry.order) {
             this._options.order = qry.order as string;
@@ -223,10 +226,18 @@ export class DatatableService<TData, TValue> {
 
     private async _updateBrowserUrl(skipHistory?: boolean) {
         const router = useRouter();
+        const options = this._getOptions();
 
-        // update the browser URL
-        const qs = queryString.stringify(this._options, { skipNull: true, skipEmptyString: true });
+        const query = {
+            perPage: options.perPage,
+            page: options.page,
+        };
+        if (options.filters) {
+            merge(query, options.filters);
+        }
+        const qs = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
         const url = `?${qs}`;
+
         if (true === skipHistory) {
             await router.replace(url);
         } else {
@@ -273,7 +284,6 @@ export class DatatableService<TData, TValue> {
         this._selectedRows = [];
         this._filterBus.emit('selectionChange', this._selectedRows);
 
-        await this._fetchData();
         await this._updateBrowserUrl(false);
         this.renderKey.value += 1;
     }

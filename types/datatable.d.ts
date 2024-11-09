@@ -30,6 +30,13 @@ declare global {
         width?: number,
     }
 
+    type DataTableOptionsType = {
+        filters?: object,
+        order?: string,
+        page: number,
+        perPage: number,
+    }
+
     type SelectedRowType<T> = T & {
         _idx: number,
     }

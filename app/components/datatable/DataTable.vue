@@ -256,9 +256,9 @@ onMounted(() => {
             </div>
 
             <Pagination
-                class="flex justify-center py-4"
+                class="w-full py-4 mb-4"
                 :pagination="datatable.meta.value?.pagination"
-                @change-page="datatable.onPaginationChange($event)"
+                @change="datatable.onPaginationChange($event)"
             />
         </ClientOnly>
     </div>
