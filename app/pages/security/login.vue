@@ -7,6 +7,8 @@ import { FetchError } from 'ofetch';
 import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
 import Logo from '~/components/branding/Logo.vue';
 import { ApiErrorService } from '~~/services/api-error-service';
+import MagicLinkLoginStep from '~/components/security/MagicLinkLoginStep.vue';
+import type { TwoFactorMethodType } from '~~/types/user';
 
 definePageMeta({
     layout: 'minimal'
@@ -19,7 +21,7 @@ const rememberMe = ref<boolean>(false);
 const error = ref<undefined | string>();
 const isProcessing = ref<boolean>(false);
 const router = useRouter();
-const step = ref<'login' | '2fa'>('login');
+const step = ref<'login' & TwoFactorMethodType>('login');
 const twoFactorCode = ref<undefined | string>();
 
 const onLogin = async () => {
@@ -30,7 +32,7 @@ const onLogin = async () => {
             const response = await security.login(email.value, password.value, rememberMe.value);
 
             if (response.two_factor_required && !response.two_factor_complete) {
-                step.value = '2fa';
+                step.value = response.two_factor_method;
             } else {
                 await router.push('/');
             }
@@ -41,7 +43,7 @@ const onLogin = async () => {
                 error.value = ars.getError().message;
             }
         }
-    } else if (step.value === '2fa' && undefined !== twoFactorCode.value) {
+    } else if (step.value === 'google-authenticator' && undefined !== twoFactorCode.value) {
         const response = await security.twoFactorAuth(twoFactorCode.value);
 
         if (response.login === 'success' && response.two_factor_complete) {
@@ -92,12 +94,17 @@ const onFormInput = (credentials: LoginFormType) => {
                         />
 
                         <TwoFactorCodeForm
-                            v-else
+                            v-else-if="step === 'google-authenticator'"
                             v-model="twoFactorCode"
                             :disabled="isProcessing"
                         />
 
+                        <MagicLinkLoginStep
+                            v-else-if="step === 'magic-link'"
+                        />
+
                         <ButtonSubmit
+                            v-if="step !== 'magic-link'"
                             class="pt-8"
                             :disabled="!isValidForm"
                             @click="onLogin"

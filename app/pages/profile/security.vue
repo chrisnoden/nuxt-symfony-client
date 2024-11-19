@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
 import SecurityRepository from '~~/repositories/security-repository';
+import ProfileItemValue from '~/components/profile/ProfileItemValue.vue';
 import UpdatePasswordForm from '~/components/profile/UpdatePasswordForm.vue';
 import UpdateEmailAddressForm from '~/components/profile/UpdateEmailAddressForm.vue';
-import ProfileItemValue from '~/components/profile/ProfileItemValue.vue';
 
 const UpdateTwoFactorForm = defineAsyncComponent(() => import('~/components/profile/UpdateTwoFactorForm.vue'));
 
@@ -77,9 +77,17 @@ const onClickShowPasswordForm = () => {
             <div class="pt-6 sm:flex">
                 <ProfileItemLabel>2FA Enabled</ProfileItemLabel>
                 <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-                    <ProfileItemValue class="text-gray-900">{{ session.twoFactorEnabled ? 'YES' : 'NO' }}</ProfileItemValue>
+                    <div>
+                        <ProfileItemValue class="text-gray-900">{{ session.twoFactorEnabled ? 'YES' : 'NO' }}</ProfileItemValue>
+                        <div
+                            v-if="!session.twoFactorEnabled"
+                            class="text-sm text-core-light-500 dark:text-core-dark-500"
+                        >
+                            We strongly encourage enabling two-factor authentication.
+                        </div>
+                    </div>
                     <button
-                        type="button" class="font-semibold text-highlight-600 hover:text-highlight-500"
+                        type="button" class="font-semibold text-highlight-600 hover:text-highlight-500 sm:self-start"
                         @click="onClickUpdateTwoFactor"
                     >Update</button>
                 </dd>

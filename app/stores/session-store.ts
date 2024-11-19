@@ -50,6 +50,9 @@ export const useSessionStore = defineStore('session', {
         twoFactorEnabled(): boolean {
             return this.session?.twoFactorEnabled ?? false;
         },
+        twoFactorMethod(): TwoFactorMethodType {
+            return this.session?.twoFactorMethod ?? 'disabled';
+        },
         user(): UserType|undefined {
             if (undefined === this.session) {
                 return undefined;
@@ -70,6 +73,7 @@ export const useSessionStore = defineStore('session', {
                 active: su.active,
                 enabled: su.enabled,
                 twoFactorEnabled: su.twoFactorEnabled,
+                twoFactorMethod: su.twoFactorMethod,
             }
         }
     },

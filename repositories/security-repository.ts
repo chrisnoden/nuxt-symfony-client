@@ -4,6 +4,7 @@ type LoginResponse = {
     login: string,
     two_factor_complete?: boolean,
     two_factor_required: boolean,
+    two_factor_method: 'disabled'|'google-authenticator'|'magic-link',
 }
 
 export default class SecurityRepository extends AbstractApiClient{
@@ -16,10 +17,11 @@ export default class SecurityRepository extends AbstractApiClient{
         )
     }
 
-    enableTwoFactor(authCode: string): Promise<ApiStandardResponse> {
+    enableTwoFactor(method: TwoFactorMethodType, authCode?: string): Promise<ApiStandardResponse> {
         return super.post(
             'security/2fa/enable',
             {
+                method,
                 authCode,
             }
         )

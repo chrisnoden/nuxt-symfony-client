@@ -5,7 +5,7 @@ const props = defineProps<{
     modelValue: boolean,
 }>();
 
-const isVisible = ref<boolean>(false);
+const isVisible = ref<boolean>(props.modelValue);
 let timeoutID: NodeJS.Timeout | undefined = undefined;
 
 const setVisibility = (v: boolean) => {

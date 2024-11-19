@@ -5,6 +5,8 @@ export {
 };
 
 declare global {
+    type TwoFactorMethodType = 'disabled' | 'magic-link' | 'google-authenticator';
+
     type RoleType = {
         name: string,
         description: string,
@@ -22,6 +24,7 @@ declare global {
         active: boolean,
         enabled: boolean,
         twoFactorEnabled: boolean,
+        twoFactorMethod: TwoFactorMethodType,
     }
 
     type UserNewType = {

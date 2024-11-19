@@ -71,7 +71,7 @@ const iconClass = (type: string) => {
         case 'warn':
         case 'notice':
         case 'warning':
-            return 'bg-amber-500';
+            return 'bg-amber-700';
         case 'info':
             return 'bg-gray-500';
         case 'error':
@@ -163,7 +163,7 @@ const textClass = (type: string) => {
                                         :class="titleClass(`${notification.type}`)"
                                     >{{ notification.title }}</span>
                                     <p
-                                        class="text-sm text-core-light-800"
+                                        class="text-sm text-core-light-800 dark:text-core-dark-800"
                                         :class="textClass(`${notification.type}`)"
                                     >
                                         {{ notification.text }}
