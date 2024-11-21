@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import LoginForm from '~/components/security/LoginForm.vue';
-import PleaseWaitModal from '~/components/modal/PleaseWaitModal.vue';
-import SecurityRepository from '~~/repositories/security-repository';
-import TwoFactorCodeForm from '~/components/security/TwoFactorCodeForm.vue';
 import { FetchError } from 'ofetch';
-import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
-import Logo from '~/components/branding/Logo.vue';
 import { ApiErrorService } from '~~/services/api-error-service';
+import SecurityRepository from '~~/repositories/security-repository';
+import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
+import LoginForm from '~/components/security/LoginForm.vue';
 import MagicLinkLoginStep from '~/components/security/MagicLinkLoginStep.vue';
-import type { TwoFactorMethodType } from '~~/types/user';
+import PleaseWaitModal from '~/components/modal/PleaseWaitModal.vue';
+import SecurityLogo from '~/components/security/SecurityLogo.vue';
+import TwoFactorCodeForm from '~/components/security/TwoFactorCodeForm.vue';
 
 definePageMeta({
     layout: 'minimal'
@@ -21,7 +20,7 @@ const rememberMe = ref<boolean>(false);
 const error = ref<undefined | string>();
 const isProcessing = ref<boolean>(false);
 const router = useRouter();
-const step = ref<'login' & TwoFactorMethodType>('login');
+const step = ref<'login' | TwoFactorMethodType>('login');
 const twoFactorCode = ref<undefined | string>();
 
 const onLogin = async () => {
@@ -59,7 +58,7 @@ const onLogin = async () => {
 
 const isValidForm = computed(() =>
     (step.value === 'login' && email.value.length > 0 && password.value.length > 0)
-        || (twoFactorCode.value !== undefined && twoFactorCode.value.length === 6)
+    || (twoFactorCode.value !== undefined && twoFactorCode.value.length === 6)
 );
 
 const onFormInput = (credentials: LoginFormType) => {
@@ -80,9 +79,7 @@ const onFormInput = (credentials: LoginFormType) => {
             ]"
         >
             <div class="px-6 sm:px-16 pt-8">
-                <div class="mx-auto">
-                    <Logo/>
-                </div>
+                <SecurityLogo />
 
                 <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <form @submit="onLogin">

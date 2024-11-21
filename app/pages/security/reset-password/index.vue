@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
-import Logo from '~/components/branding/Logo.vue';
-import InputEmail from '~/components/form/compact/InputEmail.vue';
 import SecurityRepository from '~~/repositories/security-repository';
 import { FetchError } from 'ofetch';
+import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
+import InputEmail from '~/components/form/compact/InputEmail.vue';
 import PleaseWaitModal from '~/components/modal/PleaseWaitModal.vue';
+import SecurityLogo from '~/components/security/SecurityLogo.vue';
 
 definePageMeta({
     layout: 'minimal'
@@ -46,10 +46,7 @@ const isValidForm = computed(() => (email.value.length > 4));
             ]"
         >
             <div class="px-6 sm:px-16 py-8">
-                <div class="mx-auto">
-                    <Logo/>
-                </div>
-
+                <SecurityLogo />
 
                 <div class="sm:mx-auto sm:w-full sm:max-w-sm text-center">
                     <h1 class="text-core-light-800 dark:text-core-dark-200">Reset Password</h1>

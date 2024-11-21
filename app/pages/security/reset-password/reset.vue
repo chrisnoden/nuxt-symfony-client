@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import PleaseWaitModal from '~/components/modal/PleaseWaitModal.vue';
-import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
-import Logo from '~/components/branding/Logo.vue';
 import SecurityRepository from '~~/repositories/security-repository';
 import { FetchError } from 'ofetch';
+import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
 import InputPassword from '~/components/form/compact/InputPassword.vue';
+import PleaseWaitModal from '~/components/modal/PleaseWaitModal.vue';
+import SecurityLogo from '~/components/security/SecurityLogo.vue';
 
 definePageMeta({
     layout: 'minimal'
@@ -59,10 +59,7 @@ if (undefined !== queryPropAsString('token')) {
             ]"
         >
             <div class="px-6 sm:px-16 pt-8">
-                <div class="mx-auto">
-                    <Logo/>
-                </div>
-
+                <SecurityLogo />
 
                 <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <form class="space-y-8" @submit="onSubmitClick">
