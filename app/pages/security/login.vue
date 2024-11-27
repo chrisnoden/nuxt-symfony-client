@@ -36,10 +36,16 @@ const onLogin = async () => {
                 await router.push('/');
             }
         } catch (e) {
-            if (e instanceof FetchError) {
-                const ars = new ApiErrorService();
-                ars.handle(e);
-                error.value = ars.getError().message;
+            if (e instanceof FetchError && e.statusCode) {
+                if ([400,404].includes(e.statusCode)) {
+                    error.value = 'Server Error';
+                } else {
+                    const ars = new ApiErrorService();
+                    ars.handle(e);
+                    error.value = ars.getError().message;
+                }
+            } else {
+                error.value = 'Unexpected error';
             }
         }
     } else if (step.value === 'google-authenticator' && undefined !== twoFactorCode.value) {
@@ -70,10 +76,10 @@ const onFormInput = (credentials: LoginFormType) => {
 
 <template>
     <div
-        class="flex flex-1 flex-col justify-center sm:px-6 py-12 lg:px-8"
+        class="flex flex-1 flex-col center px-2 sm:px-6 py-12 lg:px-8"
     >
         <div
-            class="border rounded-lg w-full max-w-2xl mx-auto mb-36 bg-body-bg dark:bg-core-dark-950"
+            class="border rounded-lg w-full lg:max-w-2xl lg:mx-auto mb-36 bg-body-bg dark:bg-core-dark-950"
             :class="[
                 error ? 'border-red-600' : 'border-transparent dark:border-core-dark-600',
             ]"
@@ -81,7 +87,7 @@ const onFormInput = (credentials: LoginFormType) => {
             <div class="px-6 sm:px-16 pt-8">
                 <SecurityLogo />
 
-                <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                     <form @submit="onLogin">
 
                         <LoginForm

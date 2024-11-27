@@ -6,6 +6,17 @@ export default defineNuxtConfig({
 
     compatibilityDate: '2024-04-03',
 
+    components: [
+        {
+            path: '~/components',
+            extensions: ['.vue'],
+        },
+        {
+            path: '~/components/ui',
+            extensions: ['.vue'],
+        },
+    ],
+
     devtools: { enabled: true },
 
     modules: [
@@ -57,7 +68,7 @@ export default defineNuxtConfig({
          * Directory that the component lives in.
          * @default "./components/ui"
          */
-        componentDir: './components/ui'
+        componentDir: './app/components/ui'
     },
 
     vite: {

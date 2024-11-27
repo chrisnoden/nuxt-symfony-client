@@ -50,7 +50,7 @@ defineEmits<{
                 :class="[
                     error ? 'ring-red-600' : 'ring-core-light-300',
                 ]"
-                @input="$emit('input', $event.target?.value ?? '')"
+                @input="$emit('input', ($event.target as HTMLInputElement)?.value ?? '')"
             >
         </div>
         <div class="absolute -bottom-4 px-1 text-xs text-red-600">
