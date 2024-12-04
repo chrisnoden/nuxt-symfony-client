@@ -3,10 +3,9 @@
     "author": "Chris Noden <chris@cto.support>",
     "description": "Front-end employing a BFF to connect through to a firewalled API",
     "private": true,
-    "type": "module",
     "engines": {
-        "node": "^20.16.0",
-        "npm": "^10.8.x"
+        "node": "^22.5.1",
+        "npm": "^10.8.2"
     },
     "scripts": {
         "build": "nuxt build",

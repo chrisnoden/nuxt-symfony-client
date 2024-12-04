@@ -15,6 +15,8 @@ export default defineEventHandler(async (event: H3Event) => {
     }
     const params = new URLSearchParams(uriParts[1]);
 
+    const apiUrl = process.env.H3_API_URL;
+
     const cookies: string[] = [];
     if (sessionId) {
         cookies.push(`PHPSESSID=${sessionId}`);
@@ -22,7 +24,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
     try {
         await $fetch(
-            `https://localhost:3000/api/session/me`,
+            `${apiUrl}/session/me`,
             {
                 headers: {
                     Cookie: cookies.join('; '),
