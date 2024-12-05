@@ -24,4 +24,4 @@ logs
 !.env.example
 
 # Dev certs
-/*.pem
+*.pem
