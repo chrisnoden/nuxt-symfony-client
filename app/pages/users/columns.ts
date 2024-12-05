@@ -43,7 +43,7 @@ export const columns: ColumnDef<UserType>[] = [
         },
         header: () => h('div', { class: 'text-center' }, '2FA'),
         cell: ({ row }) => h(TrueFalseColumn, {
-            value: row.getValue('enabled') === true,
+            value: row.getValue('twoFactorEnabled') === true,
         }),
         enableSorting: false,
     },
