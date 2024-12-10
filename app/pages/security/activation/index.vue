@@ -92,11 +92,14 @@ if (undefined !== queryPropAsString('token')) {
             </div>
 
             <div
-                class="rounded-b-lg text-center p-4 w-full"
+                class="rounded-b-lg text-center mt-4 p-4 w-full"
                 :class="[
                     error ? 'bg-red-600 text-white' : 'bg-none text-transparent'
                 ]"
-            >{{ error ?? 'no error' }}
+            >
+                {{ error ?? 'no error' }}
+
+                <NuxtLink to="/" class="uppercase hover:underline">Back</NuxtLink>
             </div>
         </div>
     </div>
