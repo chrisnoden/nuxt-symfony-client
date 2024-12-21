@@ -9,10 +9,10 @@ import {
     PaginationListItem,
     PaginationNext,
     PaginationPrev,
-} from '@/components/ui/pagination'
+} from '~/components/ui/pagination'
 import {
     Button,
-} from '@/components/ui/button'
+} from '~/components/ui/button'
 import PerPageSelect from '~/components/datatable/PerPageSelect.vue';
 
 const props = defineProps<{
@@ -44,7 +44,7 @@ const onPerPageChange = (value: number) => {
 
         <div class="justify-self-center md:justify-self-start lg:justify-self-center">
             <Pagination
-                v-if="pagination"
+                v-if="pagination && pagination?.total_pages > 1"
                 v-slot="{ page }"
                 :items-per-page="pagination.per_page"
                 :total="pagination.total"

@@ -228,12 +228,19 @@ export class DatatableService<TData, TValue> {
         const router = useRouter();
         const options = this._getOptions();
 
-        const query = {
+        const query: Record<string, unknown> & {
+            perPage?: number,
+            page?: number,
+            order?: string,
+        } = {
             perPage: options.perPage,
             page: options.page,
         };
         if (options.filters) {
             merge(query, options.filters);
+        }
+        if (options.order) {
+            query.order = options.order;
         }
         const qs = queryString.stringify(query, { skipNull: true, skipEmptyString: true });
         const url = `?${qs}`;
