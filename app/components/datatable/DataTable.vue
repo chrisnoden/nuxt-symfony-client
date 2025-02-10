@@ -103,7 +103,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="relative mx-auto max-w-screen-2xl py-4 lg:py-0">
+    <div class="relative mx-auto hidden max-w-screen-2xl py-4 sm:block lg:py-0">
         <ClientOnly>
             <div class="relative mb-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 xl:gap-x-6 xl:gap-y-3">
 
@@ -153,113 +153,118 @@ onMounted(() => {
                 <table v-if="datatable.isReady" ref="dt" class="datatable">
 
                     <thead>
-                        <tr
-                            v-for="headerGroup in datatable.getHeaderGroups()"
-                            :key="headerGroup.id"
+                    <tr
+                        v-for="headerGroup in datatable.getHeaderGroups()"
+                        :key="headerGroup.id"
+                    >
+                        <th
+                            v-if="selectable"
+                            class="w-[36px]"
                         >
-                            <th
-                                v-if="selectable"
-                                class="w-[36px]"
-                            >
-                                <RowSelectCheckbox
-                                    :key="selectionKey"
-                                    :checked="datatable.isAllRowsSelected()"
-                                    @change="onSelectAll"
-                                />
-                            </th>
-                            <th
-                                v-for="header in headerGroup.headers"
-                                :key="header.id"
-                                :style="styles(header)"
-                            >
-                                <div class="flex flex-row items-center gap-1 justify-stretch">
-                                    <div class="flex-1">
-                                        <FlexRender
-                                            v-if="!header.isPlaceholder"
-                                            :render="header.column.columnDef.header"
-                                            :props="header.getContext()"
-                                        />
-                                    </div>
-
-                                    <div v-if="header.column.getCanSort()">
-                                        <BarsArrowDownIcon
-                                            v-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'desc'"
-                                            class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
-                                            @click="header.column.toggleSorting()"
-                                        />
-                                        <BarsArrowUpIcon
-                                            v-else-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'asc'"
-                                            class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
-                                            @click="header.column.toggleSorting()"
-                                        />
-                                        <ArrowsUpDownIcon
-                                            v-else
-                                            class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
-                                            @click="header.column.toggleSorting()"
-                                        />
-                                    </div>
+                            <RowSelectCheckbox
+                                :key="selectionKey"
+                                :checked="datatable.isAllRowsSelected()"
+                                @change="onSelectAll"
+                            />
+                        </th>
+                        <th
+                            v-for="header in headerGroup.headers"
+                            :key="header.id"
+                            :style="styles(header)"
+                        >
+                            <div class="flex flex-row items-center gap-1 justify-stretch">
+                                <div class="flex-1">
+                                    <FlexRender
+                                        v-if="!header.isPlaceholder"
+                                        :render="header.column.columnDef.header"
+                                        :props="header.getContext()"
+                                    />
                                 </div>
-                            </th>
-                        </tr>
+
+                                <div v-if="header.column.getCanSort()">
+                                    <BarsArrowDownIcon
+                                        v-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'desc'"
+                                        class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
+                                        @click="header.column.toggleSorting()"
+                                    />
+                                    <BarsArrowUpIcon
+                                        v-else-if="datatable.getSortField() === header.column.id && datatable.getSortOrder() === 'asc'"
+                                        class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
+                                        @click="header.column.toggleSorting()"
+                                    />
+                                    <ArrowsUpDownIcon
+                                        v-else
+                                        class="h-4 w-4 cursor-pointer text-core-light-500 hover:text-core-dark-700 dark:text-core-dark-500 hover:dark:text-core-dark-300"
+                                        @click="header.column.toggleSorting()"
+                                    />
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
                     </thead>
 
                     <tbody>
-                        <template v-if="datatable.getRowModel().rows?.length">
-                            <tr
-                                v-for="(row, idx) in datatable.getRowModel().rows"
-                                :key="row.id"
-                                :class="[
+                    <template v-if="datatable.getRowModel().rows?.length">
+                        <tr
+                            v-for="(row, idx) in datatable.getRowModel().rows"
+                            :key="row.id"
+                            :class="[
                                     doubleClick && 'double-click',
                                     rowClass && rowClass(row.original),
                                     idx % 2 === 0 ? 'row-odd' : 'row-even',
                                 ]"
-                                :data-state="row.getIsSelected() ? 'selected' : undefined"
-                                @dblclick="onDoubleClick(row)"
+                            :data-state="row.getIsSelected() ? 'selected' : undefined"
+                            @dblclick="onDoubleClick(row)"
+                        >
+                            <td
+                                v-if="selectable"
                             >
-                                <td
-                                    v-if="selectable"
-                                >
-                                    <RowSelectCheckbox
-                                        :checked="datatable.isSelected(idx)"
-                                        :idx="idx"
-                                        @change="onSelectRow(idx)"
-                                    />
-                                </td>
-                                <td
-                                    v-for="cell in row.getAllCells()"
-                                    :key="cell.id"
-                                    :class="[
+                                <RowSelectCheckbox
+                                    :checked="datatable.isSelected(idx)"
+                                    :idx="idx"
+                                    @change="onSelectRow(idx)"
+                                />
+                            </td>
+                            <td
+                                v-for="cell in row.getAllCells()"
+                                :key="cell.id"
+                                :class="[
                                         !cell.column.getIsVisible() && 'hidden',
                                     ]"
-                                >
-                                    <FlexRender
-                                        :render="cell.column.columnDef.cell"
-                                        :props="cell.getContext()"
-                                    />
-                                </td>
-                            </tr>
-                        </template>
+                            >
+                                <FlexRender
+                                    :render="cell.column.columnDef.cell"
+                                    :props="cell.getContext()"
+                                />
+                            </td>
+                        </tr>
+                    </template>
 
-                        <template v-else-if="datatable.isReady && !datatable.isLoading">
-                            <tr>
-                                <td
-                                    :colspan="columns.length"
-                                    class="h-24 text-center"
-                                >
-                                    No results.
-                                </td>
-                            </tr>
-                        </template>
+                    <template v-else-if="datatable.isReady && !datatable.isLoading">
+                        <tr>
+                            <td
+                                :colspan="columns.length"
+                                class="h-24 text-center"
+                            >
+                                No results.
+                            </td>
+                        </tr>
+                    </template>
                     </tbody>
 
                 </table>
             </div>
 
             <Pagination
-                class="w-full py-4 mb-4"
+                class="mb-4 w-full py-4"
                 :pagination="datatable.meta.value?.pagination"
                 @change="datatable.onPaginationChange($event)"
             />
         </ClientOnly>
+    </div>
+
+    <div class="flex items-center p-6 sm:hidden">
+        Rotate device to view data tables.
+        <LazyIconRotateDevice />
     </div>
 </template>

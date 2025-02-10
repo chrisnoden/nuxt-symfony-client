@@ -25,7 +25,7 @@ export const columns: ColumnDef<UserType>[] = [
     },
     {
         accessorKey: 'enabled',
-        size: 100,
+        size: 74,
         meta: {
             label: 'Enabled', // ensures a nice label is used in the Column Chooser
         },
@@ -37,7 +37,7 @@ export const columns: ColumnDef<UserType>[] = [
     },
     {
         accessorKey: 'twoFactorEnabled',
-        size: 100,
+        size: 74,
         meta: {
             label: '2FA', // ensures a nice label is used in the Column Chooser
         },

@@ -18,27 +18,29 @@ const filteredItems = computed(() => filter(menuItems, (i) => hasRole(i.roles)))
 <template>
     <div
         v-if="filteredItems.length > 0"
-        class="sm:inline-flex sm:items-center"
+        :class="[
+            type === 'desktop' && 'sm:inline-flex sm:items-center',
+        ]"
     >
         <Menu v-if="type === 'desktop'" v-slot="{ close }" as="div" class="relative">
             <div>
                 <MenuButton
-                    class="w-8 h-8 relative flex max-w-xs items-center justify-center rounded-full hover:bg-core-light-100 dark:hover:bg-core-dark-700 focus:outline-none focus:ring-2 focus:ring-highlight-500 focus:ring-offset-2"
+                    class="relative flex h-8 w-8 max-w-xs items-center justify-center rounded-full hover:bg-core-light-100 focus:ring-highlight-500 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:hover:bg-core-dark-700"
                 >
                     <span class="sr-only">Open tools menu</span>
-                    <CogIcon class="w-7 h-7 text-gray-400" />
+                    <CogIcon class="h-7 w-7 text-gray-400" />
                 </MenuButton>
             </div>
             <transition
-                enter-active-class="transition ease-out duration-200"
-                enter-from-class="transform opacity-0 scale-95"
-                enter-to-class="transform opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-75"
-                leave-from-class="transform opacity-100 scale-100"
-                leave-to-class="transform opacity-0 scale-95"
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="scale-95 transform opacity-0"
+                enter-to-class="scale-100 transform opacity-100"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="scale-100 transform opacity-100"
+                leave-to-class="scale-95 transform opacity-0"
             >
                 <MenuItems
-                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-menu-popup-bg dark:bg-menu-popup-bg-dark py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 bg-menu-popup-bg focus:outline-none dark:bg-menu-popup-bg-dark"
                 >
                     <DropdownMenuItem
                         v-for="item in filteredItems"
@@ -52,15 +54,15 @@ const filteredItems = computed(() => filter(menuItems, (i) => hasRole(i.roles)))
             </transition>
         </Menu>
 
-        <div v-if="type === 'mobile'" class="border-t border-core-light-200 pb-3">
+        <div v-if="type === 'mobile'" class="border-t pb-3 border-core-light-200">
             <div class="flex items-center px-4 py-2">
-                <CogIcon class="w-8 h-8 text-core-light-400" />
+                <CogIcon class="h-8 w-8 text-core-light-400" />
                 <div class="ml-2">
                     <div class="text-base font-medium text-core-light-800 dark:text-core-dark-300">Tools</div>
                 </div>
             </div>
 
-            <div class="w-full mt-3 space-y-1">
+            <div class="mt-3 w-full space-y-1">
                 <MobileNavLink
                     v-for="item in filteredItems"
                     :key="item.name"

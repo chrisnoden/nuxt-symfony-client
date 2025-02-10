@@ -17,26 +17,30 @@ const initials = (): string => session.name?.replace(/[^a-zA-Z- ]/g, '')
 </script>
 
 <template>
-    <div class="sm:inline-flex sm:items-center">
+    <div
+        :class="[
+            type === 'desktop' && 'sm:inline-flex sm:items-center',
+        ]"
+    >
         <Menu v-if="type === 'desktop'" v-slot="{ close }" as="div" class="relative">
             <div>
                 <MenuButton
-                    class="w-8 h-8 relative flex max-w-xs items-center justify-center rounded-full hover:bg-core-light-100 dark:hover:bg-core-dark-700 text-sm text-core-light-500 dark:text-core-dark-300 focus:outline-none focus:ring-2 focus:ring-highlight-500 focus:ring-offset-2"
+                    class="relative flex h-8 w-8 max-w-xs items-center justify-center rounded-full text-sm text-core-light-500 hover:bg-core-light-100 focus:ring-highlight-500 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:text-core-dark-300 dark:hover:bg-core-dark-700"
                 >
                     <span class="sr-only">Open user menu</span>
                     {{ initials() }}
                 </MenuButton>
             </div>
             <transition
-                enter-active-class="transition ease-out duration-200"
-                enter-from-class="transform opacity-0 scale-95"
-                enter-to-class="transform opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-75"
-                leave-from-class="transform opacity-100 scale-100"
-                leave-to-class="transform opacity-0 scale-95"
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="scale-95 transform opacity-0"
+                enter-to-class="scale-100 transform opacity-100"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="scale-100 transform opacity-100"
+                leave-to-class="scale-95 transform opacity-0"
             >
                 <MenuItems
-                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-menu-popup-bg dark:bg-menu-popup-bg-dark py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 bg-menu-popup-bg focus:outline-none dark:bg-menu-popup-bg-dark"
                 >
                     <DropdownMenuItem
                         v-for="item in userNavigation"
@@ -50,10 +54,10 @@ const initials = (): string => session.name?.replace(/[^a-zA-Z- ]/g, '')
             </transition>
         </Menu>
 
-        <div v-if="type === 'mobile'" class="border-t border-gray-200 pb-3 pt-4">
+        <div v-if="type === 'mobile'" class="border-t border-gray-200 pt-4 pb-3">
             <div class="flex items-center px-4">
                 <div
-                    class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-core-light-200 text-core-light-500 dark:bg-core-dark-600 dark:text-core-dark-400 rounded-full">
+                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-core-light-200 text-core-light-500 dark:bg-core-dark-600 dark:text-core-dark-400">
                     {{ initials() }}
                 </div>
                 <div class="ml-2">

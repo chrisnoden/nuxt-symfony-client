@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import UserRepository from '~~/repositories/user-repository';
 import { columns } from './columns'
+import ClientComboBoxFilter from '~/components/datatable/filters/ClientComboBoxFilter.vue';
 import DataTable from '~/components/datatable/DataTable.vue'
 import QuickSearchFilter from '~/components/datatable/filters/QuickSearchFilter.vue';
-import TextInputFilter from '~/components/datatable/filters/TextInputFilter.vue';
 
 definePageMeta({
     title: 'User Admin'
@@ -57,16 +57,9 @@ const rowClass = (row: UserType): string[] => {
                 @double-click="onRowDblClick"
             >
                 <template #filters>
-                    <QuickSearchFilter
-                        :data-table-entity="userRepository.entity()"
-                    />
+                    <QuickSearchFilter :data-table-entity="userRepository.entity()"/>
 
-                    <TextInputFilter
-                        label="Email Address"
-                        name="email"
-                        :min-length="3"
-                        :data-table-entity="userRepository.entity()"
-                    />
+                    <ClientComboBoxFilter :data-table-entity="userRepository.entity()" />
                 </template>
             </DataTable>
         </main>
