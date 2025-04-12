@@ -165,7 +165,7 @@ fetchItems();
                     leave-to-class="scale-95 transform opacity-0"
                 >
                     <ComboboxOptions
-                        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 bg-main-bg focus:outline-none dark:bg-main-bg-dark sm:text-sm"
+                        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black/5 bg-main-bg focus:outline-none dark:bg-main-bg-dark sm:text-sm"
                     >
                         <ComboboxOption
                             v-for="item in items"

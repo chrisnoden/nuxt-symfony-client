@@ -1,8 +1,6 @@
-@use 'components/datatable';
-@tailwind components;
+@reference "~/assets/css/tailwind.css";
 
 html {
-    // our base font size
     font-size: 16px;
     scrollbar-gutter: stable;
 }
@@ -11,7 +9,8 @@ body {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.7;
-    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     margin: 0;
 
     @apply min-h-svh bg-body-bg dark:bg-body-bg-dark text-core-light-900 dark:text-core-dark-200;
@@ -29,7 +28,6 @@ body {
     }
 
     .outer-container {
-//        width: 100vw;
         /* elements inside won't be affected by scrollbars */
         display: flex;
         align-items: start;
@@ -70,13 +68,12 @@ body {
         }
     }
 
-    main {
-        a {
-            @apply text-highlight-700 dark:text-highlight-300;
-            &:not(.current) {
-                @apply hover:text-highlight-900 hover:underline dark:hover:text-highlight-100;
-            }
-        }
+    main a {
+        @apply text-highlight-700 dark:text-highlight-300;
+    }
+
+    main a:not(.current) {
+        @apply hover:text-highlight-900 hover:underline dark:hover:text-highlight-100;
     }
 }
 

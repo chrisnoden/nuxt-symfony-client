@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch';
-import { ApiErrorService } from '~~/services/api-error-service';
+import { ApiErrorService } from '~/utils/api-error-service';
 import SecurityRepository from '~~/repositories/security-repository';
 import InputTwoFactorCode from '~/components/form/compact/InputTwoFactorCode.vue';
 import ButtonSubmit from '~/components/form/ButtonSubmit.vue';
@@ -31,7 +31,7 @@ const onClickSubmit = async() => {
 </script>
 
 <template>
-    <div class="flex w-full flex-col justify-center min-w-3xl">
+    <div class="flex flex-col justify-center">
         <p class="text-sm text-core-light-700 dark:text-core-dark-300 md:text-base">
             You will need an app for your phone or computer to
             <span class="font-bold">scan the QR code below</span> and then enter the 6 digit numeric
@@ -71,7 +71,7 @@ const onClickSubmit = async() => {
         </div>
     </div>
 
-    <div class="self-center mt-8">
+    <div class="mt-8 self-center">
         <ButtonSubmit
             class="max-w-sm upp"
             :disabled="authCode.length < 6"

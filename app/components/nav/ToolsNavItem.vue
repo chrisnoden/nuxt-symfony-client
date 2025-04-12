@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Menu, MenuButton, MenuItems } from '@headlessui/vue';
+import { Menu, MenuButton } from '@headlessui/vue';
 import { CogIcon } from '@heroicons/vue/24/outline';
 import { filter } from 'lodash-es';
 import MobileNavLink from '~/components/nav/MobileNavLink.vue';
 import DropdownMenuItem from '~/components/nav/DropdownMenuItem.vue';
+import DropdownMenuGroup from '~/components/nav/DropdownMenuGroup.vue';
 
 const { type } = defineProps<{ type: 'desktop' | 'mobile' }>()
 
@@ -31,27 +32,16 @@ const filteredItems = computed(() => filter(menuItems, (i) => hasRole(i.roles)))
                     <CogIcon class="h-7 w-7 text-gray-400" />
                 </MenuButton>
             </div>
-            <transition
-                enter-active-class="transition duration-200 ease-out"
-                enter-from-class="scale-95 transform opacity-0"
-                enter-to-class="scale-100 transform opacity-100"
-                leave-active-class="transition duration-75 ease-in"
-                leave-from-class="scale-100 transform opacity-100"
-                leave-to-class="scale-95 transform opacity-0"
-            >
-                <MenuItems
-                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 bg-menu-popup-bg focus:outline-none dark:bg-menu-popup-bg-dark"
-                >
-                    <DropdownMenuItem
-                        v-for="item in filteredItems"
-                        :key="item.name"
-                        :name="item.name"
-                        :href="item.href"
-                        :roles="item.roles"
-                        @mouseup="close"
-                    />
-                </MenuItems>
-            </transition>
+            <DropdownMenuGroup>
+                <DropdownMenuItem
+                    v-for="item in filteredItems"
+                    :key="item.name"
+                    :name="item.name"
+                    :href="item.href"
+                    :roles="item.roles"
+                    @mouseup="close"
+                />
+            </DropdownMenuGroup>
         </Menu>
 
         <div v-if="type === 'mobile'" class="border-t pb-3 border-core-light-200">

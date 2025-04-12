@@ -110,6 +110,8 @@ const isModified = computed((): boolean => origValue !== value.value);
 </template>
 
 <style lang="scss" scoped>
+    @reference "~/assets/css/tailwind.css";
+
     input.is-modified:not(.has-error) {
         &:invalid {
             &:not(:placeholder-shown) {

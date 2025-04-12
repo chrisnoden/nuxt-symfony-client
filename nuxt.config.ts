@@ -1,3 +1,5 @@
+import tailwindcss from "@tailwindcss/vite";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     future: {
@@ -21,8 +23,6 @@ export default defineNuxtConfig({
 
     modules: [
         '@nuxt/icon',
-        // Doc: https://github.com/nuxt-community/nuxt-tailwindcss
-        '@nuxtjs/tailwindcss',
         '@nuxtjs/color-mode',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
@@ -32,9 +32,11 @@ export default defineNuxtConfig({
     ],
 
     css: [
-        '~/assets/css/tailwind.scss',
+        '~/assets/css/tailwind.css',
         // our project css
-        '~/assets/css/app.scss',
+        '~/assets/css/app.css',
+        // specific component css
+        '~/assets/css/components/datatable.css'
     ],
 
     routeRules: {
@@ -78,7 +80,10 @@ export default defineNuxtConfig({
                     api: 'modern-compiler' // or "modern"
                 }
             }
-        }
+        },
+        plugins: [
+            tailwindcss(),
+        ]
     },
 
     $development: {

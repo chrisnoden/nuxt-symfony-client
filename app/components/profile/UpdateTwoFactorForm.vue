@@ -104,10 +104,10 @@ watch(() => visible.value,
 
         </div>
 
-        <div v-else-if="chosenMethod === 'disabled'" class="flex w-full flex-col justify-center min-w-3xl">
+        <div v-else-if="chosenMethod === 'disabled'" class="flex w-fit flex-col justify-center">
             Please choose which security method you prefer.
 
-            <div class="mt-4 grid w-full grid-cols-2 gap-8">
+            <div class="mt-4 grid w-full grid-cols-1 gap-8 md:grid-cols-2">
                 <div
                     class="flex w-full cursor-pointer flex-col items-center rounded-md border shadow-sm border-highlight-600 group hover:bg-highlight-500"
                     @click="chosenMethod = 'google-authenticator'"

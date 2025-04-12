@@ -29,13 +29,13 @@ const onClickSubmit = async() => {
 </script>
 
 <template>
-    <div class="flex w-full flex-col justify-center min-w-3xl">
+    <div class="flex flex-col justify-center">
         <p class="text-sm text-core-light-700 dark:text-core-dark-300 md:text-base">
             Once enabled, as part of each login, you will be emailed a link which you must click.
         </p>
     </div>
 
-    <div class="self-center mt-8">
+    <div class="mt-8 self-center">
         <ButtonSubmit
             class="max-w-sm"
             @click="onClickSubmit"

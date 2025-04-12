@@ -2,7 +2,7 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt({
     rules: {
-        '@typescript-eslint/indent': ['error', 4],
+        '@/indent': ['error', 4, { 'SwitchCase': 1 }],
         '@typescript-eslint/semi': 0,
         'baseIndent': 0,
         'brace-style': 'off',
@@ -10,7 +10,6 @@ export default withNuxt({
         'import/no-extraneous-dependencies': 0,
         'import/no-unresolved': 0,
         'import/prefer-default-export': 0,
-        'indent': ['error', 4, { 'SwitchCase': 1 }],
         'max-len': ['warn', { 'code': 160 }],
         'no-console': 'warn',
         'no-alert': 0,
