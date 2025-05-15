@@ -4,8 +4,7 @@
     "description": "Front-end employing a BFF to connect through to a firewalled API",
     "private": true,
     "engines": {
-        "node": "^22.5.1",
-        "npm": "^10.8.2"
+        "node": "^22.5.1"
     },
     "scripts": {
         "build": "nuxt build",
