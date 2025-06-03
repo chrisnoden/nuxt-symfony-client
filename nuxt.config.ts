@@ -54,7 +54,6 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             // these env vars are available in the client runtime
-            API_URL: process.env.API_URL,
             MAINTENANCE: process.env.MAINTENANCE,
             SITE_NAME: process.env.SITE_NAME,
             TABLE_PER_PAGE_DEFAULT: process.env.TABLE_PER_PAGE_DEFAULT,

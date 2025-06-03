@@ -12,11 +12,11 @@ export default abstract class AbstractApiClient {
         ].join('; ');
     }
 
-    protected get<T>(endpoint: string, params?: object): Promise<T> {
-        const env = useRuntimeConfig();
+    protected get<T>(endpoint: string, params?: object, suppressErrorHandling?: boolean): Promise<T> {
+        const { $csrfFetch } = useNuxtApp()
 
-        return $fetch(
-            `${env.public.API_URL}/${endpoint}`,
+        return $csrfFetch(
+            `/api/${endpoint}`,
             {
                 credentials: 'include',
                 params,
@@ -26,7 +26,9 @@ export default abstract class AbstractApiClient {
             },
         )
             .catch((error) => {
-                handleApiError(error);
+                if (!suppressErrorHandling) {
+                    handleApiError(error);
+                }
 
                 throw error;
             }) as Promise<T>
@@ -39,16 +41,16 @@ export default abstract class AbstractApiClient {
         perPage?: number,
         order?: string,
     ): Promise<{ data: T[], meta: ApiMetaType }> {
-        const env = useRuntimeConfig();
+        const { $csrfFetch } = useNuxtApp()
 
         const params = merge(clone(filters), {
             order: order ?? undefined,
             page: Math.abs(page ?? 1),
-            per_page: Math.abs(perPage ?? parseInt(`${env.public.TABLE_PER_PAGE_DEFAULT ?? 25}`, 10)),
+            per_page: Math.abs(perPage ?? 24),
         })
 
-        return $fetch(
-            `${env.public.API_URL}/${endpoint}`,
+        return $csrfFetch(
+            `/api/${endpoint}`,
             {
                 credentials: 'include',
                 params,
@@ -62,12 +64,11 @@ export default abstract class AbstractApiClient {
             }) as Promise<{ data: T[], meta: ApiMetaType }>
     }
 
-    protected post<T>(endpoint:string, data?: object): Promise<T> {
+    protected post<T>(endpoint:string, data?: object, suppressErrorHandling?: boolean): Promise<T> {
         const { $csrfFetch } = useNuxtApp()
-        const env = useRuntimeConfig();
 
         return $csrfFetch(
-            `${env.public.API_URL}/${endpoint}`,
+            `/api/${endpoint}`,
             {
                 body: data,
                 credentials: 'include',
@@ -78,18 +79,19 @@ export default abstract class AbstractApiClient {
             }
         )
             .catch((error) => {
-                handleApiError(error);
+                if (!suppressErrorHandling) {
+                    handleApiError(error);
+                }
 
                 throw error;
             }) as Promise<T>
     }
 
-    protected put<T>(endpoint:string, data?: object): Promise<T> {
+    protected put<T>(endpoint:string, data?: object, suppressErrorHandling?: boolean): Promise<T> {
         const { $csrfFetch } = useNuxtApp()
-        const env = useRuntimeConfig();
 
         return $csrfFetch(
-            `${env.public.API_URL}/${endpoint}`,
+            `/api/${endpoint}`,
             {
                 body: data,
                 credentials: 'include',
@@ -100,18 +102,19 @@ export default abstract class AbstractApiClient {
             }
         )
             .catch((error) => {
-                handleApiError(error);
+                if (!suppressErrorHandling) {
+                    handleApiError(error);
+                }
 
                 throw error;
             }) as Promise<T>
     }
 
-    protected delete<T>(endpoint:string, params?: object): Promise<T> {
+    protected delete<T>(endpoint:string, params?: object, suppressErrorHandling?: boolean): Promise<T> {
         const { $csrfFetch } = useNuxtApp()
-        const env = useRuntimeConfig();
 
         return $csrfFetch(
-            `${env.public.API_URL}/${endpoint}`,
+            `/api/${endpoint}`,
             {
                 credentials: 'include',
                 params,
@@ -122,7 +125,9 @@ export default abstract class AbstractApiClient {
             }
         )
             .catch((error) => {
-                handleApiError(error);
+                if (!suppressErrorHandling) {
+                    handleApiError(error);
+                }
 
                 throw error;
             }) as Promise<T>

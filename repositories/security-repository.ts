@@ -28,11 +28,10 @@ export default class SecurityRepository extends AbstractApiClient{
     }
 
     login(email: string, password: string, rememberMe: boolean): Promise<LoginResponse> {
-        const env = useRuntimeConfig();
         const { $csrfFetch } = useNuxtApp()
 
         return $csrfFetch(
-            `${env.public.API_URL}/login`,
+            `/api/login`,
             {
                 body: {
                     email,
@@ -50,11 +49,10 @@ export default class SecurityRepository extends AbstractApiClient{
     }
 
     resetPasswordBegin(email: string): Promise<ApiStandardResponse> {
-        const env = useRuntimeConfig();
         const { $csrfFetch } = useNuxtApp()
 
         return $csrfFetch(
-            `${env.public.API_URL}/security/reset-password/begin`,
+            `/api/security/reset-password/begin`,
             {
                 body: {
                     email,
@@ -66,11 +64,10 @@ export default class SecurityRepository extends AbstractApiClient{
     }
 
     resetPasswordReset(token: string, password: string): Promise<ApiStandardResponse> {
-        const env = useRuntimeConfig();
         const { $csrfFetch } = useNuxtApp()
 
         return $csrfFetch(
-            `${env.public.API_URL}/security/reset-password/reset`,
+            `/api/security/reset-password/reset`,
             {
                 body: {
                     token,
@@ -83,10 +80,8 @@ export default class SecurityRepository extends AbstractApiClient{
     }
 
     session(): Promise<UserType> {
-        const env = useRuntimeConfig();
-
         return $fetch(
-            `${env.public.API_URL}/session/me`,
+            `/api/session/me`,
             {
                 credentials: 'include',
             },

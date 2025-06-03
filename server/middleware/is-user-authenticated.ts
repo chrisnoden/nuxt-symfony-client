@@ -10,12 +10,13 @@ export default defineEventHandler(async (event: H3Event) => {
     const sessionId = getCookie(event, 'PHPSESSID');
     const uriParts = event.path.replace(/^\//, '').split('?');
     const path = toLower(uriParts[0]);
-    if (path.substring(0, 4) === 'api/' || path.substring(0, 6) === '_nuxt/' || path.substring(0, 6) === '__nuxt') {
+    if (path.substring(0, 4) === 'api/' || path.substring(0, 6) === '_nuxt/' || path.substring(0, 6) === '__nuxt' || path.substring(0, 5) === '_ipx/') {
         return;
     }
     const params = new URLSearchParams(uriParts[1]);
+    const env = process.env;
 
-    const apiUrl = process.env.H3_API_URL;
+    const apiUrl = env.NODE_ENV === 'development' ? 'https://localhost:3000/api' : '/api';
 
     const cookies: string[] = [];
     if (sessionId) {
