@@ -37,7 +37,7 @@ const onPerPageChange = (value: number) => {
 </script>
 
 <template>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 items-center">
+    <div class="grid grid-cols-1 items-center gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
         <div class="hidden lg:block">
             &nbsp;
         </div>
@@ -54,8 +54,8 @@ const onPerPageChange = (value: number) => {
                 @update:page="onPageChange"
             >
                 <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-                    <PaginationFirst />
-                    <PaginationPrev />
+                    <PaginationFirst class="cursor-pointer" />
+                    <PaginationPrev class="cursor-pointer" />
 
                     <template v-for="(item, index) in items">
                         <PaginationListItem
@@ -64,7 +64,7 @@ const onPerPageChange = (value: number) => {
                             :value="item.value"
                             as-child
                         >
-                            <Button class="w-10 h-10 p-0" :variant="item.value === page ? 'default' : 'outline'">
+                            <Button class="h-10 cursor-pointer p-0 min-w-10" :variant="item.value === page ? 'default' : 'outline'">
                                 {{ item.value }}
                             </Button>
                         </PaginationListItem>
@@ -72,8 +72,8 @@ const onPerPageChange = (value: number) => {
                         <PaginationEllipsis v-else :key="item.type" :index="index" />
                     </template>
 
-                    <PaginationNext />
-                    <PaginationLast />
+                    <PaginationNext class="cursor-pointer" />
+                    <PaginationLast class="cursor-pointer" />
                 </PaginationList>
             </Pagination>
         </div>
