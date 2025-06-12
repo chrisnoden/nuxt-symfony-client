@@ -5,7 +5,7 @@ import type {
     Row,
 } from '@tanstack/vue-table'
 import { filter } from 'lodash-es';
-import { DatatableService } from '~~/services/datatable-service';
+import { DatatableService } from '~/utils/datatable-service';
 import {
     FlexRender,
 } from '@tanstack/vue-table'
@@ -14,9 +14,11 @@ import { ArrowsUpDownIcon, BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons
 import ColumnChooser from '~/components/datatable/ColumnChooser.vue';
 import Pagination from '~/components/datatable/Pagination.vue';
 import RowSelectCheckbox from '~/components/datatable/RowSelectCheckbox.vue';
+import ViewSelectionButtons from '~/components/datatable/ViewSelectionButtons.vue';
 
 const props = defineProps<{
     apiService: DataTableAwareApiClientContract<TData>,
+    cardComponent?: object,
     columns: ColumnDef<TData, TValue>[],
     doubleClick?: boolean,
     defaultSortField?: string,
@@ -77,6 +79,10 @@ const onSelectRow = (idx: number): void => {
     selectionKey.value += 1;
 }
 
+const onViewTypeChange = async(newViewType: string): Promise<void> => {
+    datatable.viewTypeChange(newViewType);
+}
+
 filterBus.on(async (type, props) => {
     switch (type) {
         case 'dirtyFilters':
@@ -103,54 +109,91 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="relative mx-auto hidden max-w-screen-2xl py-4 sm:block lg:py-0">
-        <ClientOnly>
-            <div class="relative mb-2 grid grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 xl:gap-x-6 xl:gap-y-3">
+    <ClientOnly>
+        <div class="relative mx-auto mb-2 grid w-full max-w-screen-2xl grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-x-6 xl:gap-y-3">
 
-                <slot name="filters" />
+            <slot name="filters" />
 
-                <div
-                    class="flex flex-row items-center justify-end gap-1"
-                    style="grid-column-end: -1;"
+            <div
+                class="justify-self-end"
+                style="grid-column-end: -2;"
+            >
+                <button
+                    v-if="showNewButton"
+                    type="button"
+                    class="flex h-full items-center rounded-md px-2 text-sm font-semibold uppercase leading-6 text-white shadow-xs bg-highlight-500 py-1.5 group hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    @click.prevent="$emit('clickNew')"
                 >
-                    <div
-                        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-green-400 py-1.5 group hover:bg-green-500"
-                        :class="[
-                            hasDirtyFilters && 'visible',
-                            !hasDirtyFilters && 'invisible',
-                        ]"
-                        @click="onApplyFilters()"
-                    >
-                        <FunnelIcon class="h-6 w-6 text-white"/>
-                    </div>
-
-                    <div
-                        class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-core-light-50 group hover:bg-core-light-100 dark:bg-core-dark-950 dark:hover:bg-core-dark-900"
-                        @click="datatable.reload"
-                    >
-                        <ArrowPathIcon class="h-6 w-6 text-highlight-300 group-hover:text-highlight-600"/>
-                    </div>
-
-                    <ColumnChooser
-                        v-if="hideColumnChooser !== true"
-                        :columns="datatable.columns.value"
-                        class="flex-1"
-                        @update:model-value="datatable.renderKey.value += 1"
-                    />
-
-                    <button
-                        v-if="showNewButton"
-                        type="button"
-                        class="flex justify-center rounded-md px-2 text-sm font-semibold uppercase leading-6 text-white shadow-sm bg-highlight-500 py-1.5 group hover:bg-highlight-600 focus-visible:outline-highlight-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                        @click.prevent="$emit('clickNew')"
-                    >
-                        <PlusIcon class="h-6 w-6 text-white group-hover:text-core-light-100" />
-                    </button>
-                </div>
+                    <slot name="newButton">
+                        <PlusIcon class="mr-1 w-6 text-white group-hover:text-core-light-100" /> new {{ apiService.entity() }}
+                    </slot>
+                </button>
             </div>
 
-            <div class="rounded-md border">
-                <table v-if="datatable.isReady" ref="dt" class="datatable">
+            <div
+                class="flex w-full flex-row items-center justify-between gap-1"
+                style="grid-column-end: -1;"
+            >
+                <div
+                    class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-green-400 py-1.5 group hover:bg-green-500"
+                    :class="[
+                        hasDirtyFilters && 'visible',
+                        !hasDirtyFilters && 'invisible',
+                    ]"
+                    @click="onApplyFilters()"
+                >
+                    <FunnelIcon class="h-6 w-6 text-white"/>
+                </div>
+
+                <div
+                    class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-core-light-50 group hover:bg-core-light-100 dark:bg-core-dark-950 dark:hover:bg-core-dark-900"
+                    @click="datatable.reload"
+                >
+                    <ArrowPathIcon class="h-6 w-6 text-highlight-300 group-hover:text-highlight-600"/>
+                </div>
+
+
+                <ColumnChooser
+                    v-if="hideColumnChooser !== true && datatable.viewType.value !== 'grid'"
+                    :columns="datatable.columns.value"
+                    class="flex-1"
+                />
+
+                <ViewSelectionButtons
+                    v-if="cardComponent"
+                    @change="onViewTypeChange"
+                />
+
+            </div>
+        </div>
+
+        <div
+            id="top-of-section"
+            class="w-full"
+        >
+            <div
+                v-if="datatable.viewType.value === 'grid'"
+            >
+                <DatatableCardLayout v-if="datatable.isReady">
+                    <component
+                        :is="cardComponent"
+                        v-for="(row, idx) in datatable.getRowModel().rows"
+                        :key="idx"
+                        :item="row.original"
+                        @dblclick="onDoubleClick(row)"
+                    />
+                </DatatableCardLayout>
+            </div>
+
+            <div
+                v-else
+                class="mx-auto w-full max-w-screen-2xl rounded-md border"
+            >
+                <table
+                    v-if="datatable.isReady"
+                    ref="dt"
+                    class="hidden w-full datatable sm:table"
+                >
 
                     <thead>
                         <tr
@@ -253,6 +296,14 @@ onMounted(() => {
                     </tbody>
 
                 </table>
+
+                <div
+                    class="flex items-center justify-between p-6 sm:hidden"
+                >
+                    Rotate device to view data tables.
+                    <LazyIconRotateDevice />
+                </div>
+
             </div>
 
             <Pagination
@@ -260,11 +311,7 @@ onMounted(() => {
                 :pagination="datatable.meta.value?.pagination"
                 @change="datatable.onPaginationChange($event)"
             />
-        </ClientOnly>
-    </div>
+        </div>
+    </ClientOnly>
 
-    <div class="flex items-center p-6 sm:hidden">
-        Rotate device to view data tables.
-        <LazyIconRotateDevice />
-    </div>
 </template>

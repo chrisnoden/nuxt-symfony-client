@@ -40,4 +40,6 @@ declare global {
     type SelectedRowType<T> = T & {
         _idx: number,
     }
+
+    type ViewTypeType = 'grid' | undefined;
 }
